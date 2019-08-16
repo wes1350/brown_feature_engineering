@@ -81,19 +81,19 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
         # Translate json opt outs
-        if hyperparams["opt_outs"] is not None:
-            translated_opt_outs = json.loads(hyperparams["opt_outs"])
+        if self.hyperparams["opt_outs"] is not None:
+            translated_opt_outs = json.loads(self.hyperparams["opt_outs"])
         else:
             translated_opt_outs = None
 
-        if hyperparams["paths"] is None or hyperparams["operations"] is None:
+        if self.hyperparams["paths"] is None or self.hyperparams["operations"] is None:
             return inputs  # Not enough info, just return original data
 
         # Translate rest of json inputs
 
-        translated_paths = json.loads(hyperparams["paths"])
-        translated_op_dict = json.loads(hyperparams["operations"])
-        translated_names = json.loads(hyperparams["names_to_keep"])
+        translated_paths = json.loads(self.hyperparams["paths"])
+        translated_op_dict = json.loads(self.hyperparams["operations"])
+        translated_names = json.loads(self.hyperparams["names_to_keep"])
 
         # reconstruct ops used to create for applyBulkTransform
         reconstructed_op_dict = {}
