@@ -63,15 +63,15 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             'python_path': 'd3m.primitives.data_transformation.feature_transform.Brown',
             'source': {
                 'name': "Brown",
-                'contact': 'wrunnels@mit.edu',
+                'contact': 'mailto:wrunnels@mit.edu',
                 'uris': [
-                    'google.com',
-                    'mit.edu'
+                    'https://google.com',
+                    'https://mit.edu'
                 ],
             },
             'installation': [{
                 'type': metadata_base.PrimitiveInstallationType.PIP,
-                'package_uri': 'mit.edu'
+                'package_uri': 'https://mit.edu'
             }],
             'algorithm_types': ["DATA_CONVERSION"],
             'primitive_family': "DATA_TRANSFORMATION",
