@@ -78,22 +78,21 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
         }
     )
 
-    def produce(self, *, inputs: Inputs,  paths : str = None, operations : str = None, names_to_keep : str = None,
-                opt_outs : str = None) -> base.CallResult[Outputs]:
+    def produce(self, *, inputs: Inputs) -> base.CallResult[Outputs]:
         # Translate json opt outs
-        if opt_outs is not None:
-            translated_opt_outs = json.loads(opt_outs)
+        if hyperparams["opt_outs"] is not None:
+            translated_opt_outs = json.loads(hyperparams["opt_outs"])
         else:
             translated_opt_outs = None
 
-        if paths is None or operations is None:
+        if hyperparams["paths"] is None or hyperparams["operations"] is None:
             return inputs  # Not enough info, just return original data
 
         # Translate rest of json inputs
 
-        translated_paths = json.loads(paths)
-        translated_op_dict = json.loads(operations)
-        translated_names = json.loads(names_to_keep)
+        translated_paths = json.loads(hyperparams["paths"])
+        translated_op_dict = json.loads(hyperparams["operations"])
+        translated_names = json.loads(hyperparams["names_to_keep"])
 
         # reconstruct ops used to create for applyBulkTransform
         reconstructed_op_dict = {}
@@ -183,10 +182,10 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
         # More checks? Like if all given labels in paths exist in op dict?
         if desired_node not in reconstructed_op_dict:
-            print(reconstructed_op_dict, translated_op_dict, operations)
-            print(desired_node)
-            print(paths, translated_paths)
-            print(names_to_keep, translated_names)
+            # print(reconstructed_op_dict, translated_op_dict, operations)
+            # print(desired_node)
+            # print(paths, translated_paths)
+            # print(names_to_keep, translated_names)
             raise Exception("Node to be constructed not found in given operation dictionary")
         for path in translated_paths:
             for node in path:
