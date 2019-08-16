@@ -60,21 +60,22 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             'version': '0.1.0',
             'name': "Feature Engineering Dataframe Transformer",
             'keywords': ['feature engineering', 'transform'],
-            'python_path': '#TODO',
+            'python_path': 'd3m.primitives.data_transformation.feature_transform.Brown',
             'source': {
                 'name': "Brown",
                 'contact': 'wrunnels@mit.edu',
                 'uris': [
-                    '#TODO - link to file',
-                    '#TODO - link to repo'
+                    'google.com',
+                    'mit.edu'
                 ],
             },
             'installation': [{
-                'type': '#TODO',
-                'package_uri': '#TODO'
+                'type': metadata_base.PrimitiveInstallationType.PIP,
+                'package_uri': 'mit.edu'
             }],
-            'algorithm_types': '#TODO',
-            'primitive_family': '#TODO'
+            'algorithm_types': ["DATA_CONVERSION"],
+            'primitive_family': "DATA_TRANSFORMATION",
+            'hyperparams_to_tune': ["paths", "operations", "names_to_keep", "opt_outs"]
         }
     )
 
