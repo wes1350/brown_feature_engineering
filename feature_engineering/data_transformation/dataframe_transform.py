@@ -93,7 +93,10 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
         translated_paths = json.loads(self.hyperparams["paths"])
         translated_op_dict = json.loads(self.hyperparams["operations"])
-        translated_names = json.loads(self.hyperparams["names_to_keep"])
+        if self.hyperparams["names_to_keep"] is not None:
+            translated_names = json.loads(self.hyperparams["names_to_keep"])
+        else:
+            translated_names = None
 
         # reconstruct ops used to create for applyBulkTransform
         reconstructed_op_dict = {}
