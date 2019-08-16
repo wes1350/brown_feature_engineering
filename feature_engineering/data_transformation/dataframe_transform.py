@@ -269,7 +269,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
         # done ?
 
     # TODO: Specify target, inputs, etc. - through metadata? #6 on checklist
-        # done ?
+        # not done? We generated new metadata but how does it know which column is the target?
 
     # TODO: Implement can_accept method? See IncrementPrimitive for example
         # seems to be unnecessary
