@@ -45,7 +45,7 @@ class Hyperparams(hyperparams.Hyperparams):
     )
 
 
-class DataframeTransformPrimitive(featurization.TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
+class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
     A primitive which transforms a dataframe by adding or removing columns based on the operations specified. Additional
     columns take values based on previous columns, e.g. log of column values, or sum of two different column values.

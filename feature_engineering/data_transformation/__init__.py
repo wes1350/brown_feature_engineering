@@ -1,2 +1,1 @@
-from .dataframe_transform import DataframeTransformPrimitive
-
+from .dataframe_transform import DataframeTransform
