@@ -46,15 +46,23 @@ step_4.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_re
 step_4.add_output('produce')
 pipeline_description.add_step(step_4)
 
-# Step 6: random_forest
-step_5 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.regression.random_forest.SKlearn'))
+# Step 6: feature engineering
+step_5 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.data_transformation.feature_transform.Brown'))
 step_5.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='steps.4.produce')
-step_5.add_argument(name='outputs', argument_type=ArgumentType.CONTAINER, data_reference=targets)
 step_5.add_output('produce')
+step_5.add_hyperparameter(name='paths', argument_type=ArgumentType.VALUE, data="[[0, 1]]")
+step_5.add_hyperparameter(name='operations', argument_type=ArgumentType.VALUE, data="{\"0\": \"INIT\", \"1\": \"log\"}")
 pipeline_description.add_step(step_5)
 
+# Step 7: random_forest
+step_6 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.regression.random_forest.SKlearn'))
+step_6.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='steps.5.produce')
+step_6.add_argument(name='outputs', argument_type=ArgumentType.CONTAINER, data_reference=targets)
+step_6.add_output('produce')
+pipeline_description.add_step(step_6)
+
 # Final Output
-pipeline_description.add_output(name='output predictions', data_reference='steps.5.produce')
+pipeline_description.add_output(name='output predictions', data_reference='steps.6.produce')
 
 # Output to YAML
 # print(pipeline_description.to_yaml())
