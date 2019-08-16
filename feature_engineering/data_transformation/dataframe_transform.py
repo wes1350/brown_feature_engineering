@@ -16,7 +16,7 @@ from .operations import UnionOperation, FeatureSelectionOperation, SpatialAggreg
 from . import FeatureSet
 from . import Transformer
 
-# __all__ = ('DataFrameTransformPrimitive',)
+__all__ = ('DataframeTransformPrimitive',)
 
 Inputs = container.DataFrame
 Outputs = container.DataFrame
@@ -259,9 +259,17 @@ class DataframeTransformPrimitive(featurization.TransformerPrimitiveBase[Inputs,
                 assert False
 
         # Remove dummy columns
-        outputs = Transformer.recompress_categorical_features(reconstructed)
+        results = Transformer.recompress_categorical_features(reconstructed)
+
+        outputs = container.DataFrame(results, generate_metadata=True)
 
         return base.CallResult(outputs)
 
     # TODO: Update metadata ourselves? See IncrementPrimitive under TA1 Examples, for example
+        # done ?
+
     # TODO: Specify target, inputs, etc. - through metadata? #6 on checklist
+        # done ?
+
+    # TODO: Implement can_accept method? See IncrementPrimitive for example
+        # seems to be unnecessary
