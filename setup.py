@@ -11,7 +11,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         'd3m.primitives': [
-            'feature_engineering.DataframeTransform = feature_engineering.data_transformation:DataframeTransform'
+            'data_transformation.Brown = feature_engineering.data_transformation:DataframeTransform'
         ]
     },
     classifiers=['Programming Language :: Python :: 3',
