@@ -79,7 +79,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
         }
     )
 
-    def produce(self, *, inputs: Inputs) -> base.CallResult[Outputs]:
+    def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
         # Translate json opt outs
         if hyperparams["opt_outs"] is not None:
             translated_opt_outs = json.loads(hyperparams["opt_outs"])
