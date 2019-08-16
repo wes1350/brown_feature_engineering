@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="036794dd-d6df-4292-b310-ae9812fa6e36" name="Default" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="setup.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/setup.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="54">
+              <caret line="3" column="35" lean-forward="false" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>FERL</find>
+      <find>..</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/rl_feature_eng/testfile.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/Graph.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/Node.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/FeatureSet.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/Transformer.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/RL1.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/Characteristics.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/Config.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/DirectInputInfoEncaser.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/UnionOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/DateSplitOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/FeatureSelectionOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/InitializationOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/OneArgOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/TwoArgOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/StatisticalOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/AggregateOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/operations/SpatialAggregationOperation.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/__init__.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/PipelineManager.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/Main.py" />
+        <option value="$PROJECT_DIR$/rl_feature_eng/dataframe_transform.py" />
+        <option value="$PROJECT_DIR$/primitive/primitive_code/FeatureSet.py" />
+        <option value="$PROJECT_DIR$/primitive/primitive_code/__init__.py" />
+        <option value="$PROJECT_DIR$/primitive/primitive_code/__init_.py" />
+        <option value="$PROJECT_DIR$/primitive/primitive_code/dataframe_transform.py" />
+        <option value="$PROJECT_DIR$/setup.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="67" />
+    <option name="y" value="33" />
+    <option name="width" value="1853" />
+    <option name="height" value="1031" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="brown_feature_engineering" type="b2602c69:ProjectViewProjectNode" />
+              <item name="brown_feature_engineering" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="brown_feature_engineering" type="b2602c69:ProjectViewProjectNode" />
+              <item name="brown_feature_engineering" type="462c0819:PsiDirectoryNode" />
+              <item name="feature_engineering" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="brown_feature_engineering" type="b2602c69:ProjectViewProjectNode" />
+              <item name="brown_feature_engineering" type="462c0819:PsiDirectoryNode" />
+              <item name="feature_engineering" type="462c0819:PsiDirectoryNode" />
+              <item name="unit_tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$USER_HOME$/anaconda3/bin/python3.7" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/primitive" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.dataframe_transform">
+    <configuration name="Main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/rl_feature_eng" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="rl_feature_eng" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/rl_feature_eng/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <configuration name="dataframe_transform" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/primitive/primitive_code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="rl_feature_eng" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/primitive/primitive_code/dataframe_transform.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <configuration name="testfile" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/rl_feature_eng" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="rl_feature_eng" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/rl_feature_eng/testfile.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <list size="3">
+      <item index="0" class="java.lang.String" itemvalue="Python.Main" />
+      <item index="1" class="java.lang.String" itemvalue="Python.testfile" />
+      <item index="2" class="java.lang.String" itemvalue="Python.dataframe_transform" />
+    </list>
+    <recent_temporary>
+      <list size="3">
+        <item index="0" class="java.lang.String" itemvalue="Python.dataframe_transform" />
+        <item index="1" class="java.lang.String" itemvalue="Python.Main" />
+        <item index="2" class="java.lang.String" itemvalue="Python.testfile" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="036794dd-d6df-4292-b310-ae9812fa6e36" name="Default" comment="" />
+      <created>1561851978676</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1561851978676</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="67" y="33" width="1853" height="1031" extended-state="0" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24986508" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32972974" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/dataframe_transform.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/FeatureSet.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Node.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Main.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/DirectInputInfoEncaser.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Config.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/PipelineManager.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Primitive.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Graph.py" />
+    <entry file="file://$PROJECT_DIR$/Main.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/AggregateOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/UnionOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/TwoArgOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/TransformOperations.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/StatisticalOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/SpatialAggregationOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/Operation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/OneArgOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/InitializationOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/FeatureSelectionOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/DateSplitOperation.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Characteristics.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Tests.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/testfile.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/FeatureSet.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Transformer.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/RL1.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/PipelineManager.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Main.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/DirectInputInfoEncaser.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Graph.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Node.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/operations/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Config.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/Primitive.py" />
+    <entry file="file://$PROJECT_DIR$/rl_feature_eng/dataframe_transform.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/Config.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/FeatureSet.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/dataframe_transform.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/primitive_code/FeatureSet.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/primitive_code/operations/FeatureSelectionOperation.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/primitive_code/operations/AggregateOperation.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/primitive_code/Transformer.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/primitive_code/__init_.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/primitive_code/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/primitive/primitive_code/dataframe_transform.py" />
+    <entry file="file://$PROJECT_DIR$/feature_engineering/unit_tests/Tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3180">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="3" column="35" lean-forward="false" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
