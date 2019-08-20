@@ -33,6 +33,8 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
+        print(result.columns)
+        print(result)
         self.assertEqual(len(result.columns), 7)
         result = list(result[op_name + " n1"])
 
@@ -230,7 +232,7 @@ class test_transform(unittest.TestCase):
 
         for i in range(len(ans)):
             self.assertAlmostEqual(result[i], ans[i])
-                    
+
 
 if __name__ == '__main__':
     unittest.main()
