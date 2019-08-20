@@ -73,7 +73,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 'package_uri': 'https://github.com/wes1350/brown_feature_engineering'
             }],
             'algorithm_types': ["DATA_CONVERSION"],
-            'primitive_family': "DATA_TRANSFORMATION",
+            'primitive_family': "FEATURE_EXTRACTION",
             'hyperparams_to_tune': ["paths", "operations", "names_to_keep", "opt_outs"]
         }
     )
@@ -266,15 +266,8 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
         # Remove dummy columns
         results = Transformer.recompress_categorical_features(reconstructed)
 
-        outputs = container.DataFrame(results, generate_metadata=True)
+        outputs = container.DataFrame(results)
+
+        outputs.metadata = inputs.metadata.generate(value=outputs)
 
         return base.CallResult(outputs)
-
-    # TODO: Update metadata ourselves? See IncrementPrimitive under TA1 Examples, for example
-        # done ?
-
-    # TODO: Specify target, inputs, etc. - through metadata? #6 on checklist
-        # not done? We generated new metadata but how does it know which column is the target?
-
-    # TODO: Implement can_accept method? See IncrementPrimitive for example
-        # seems to be unnecessary
