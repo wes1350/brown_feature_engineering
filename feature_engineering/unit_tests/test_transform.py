@@ -8,16 +8,17 @@ n2 = pd.Series([3, 6, 10, 0, 0, 5, 2, -3, -7, 1])
 n3 = pd.Series([77, 54, 124, -665, 104, 7, 16.3, 8.22, 19.102, 5])
 c1 = pd.Series(['a', 'b', 'c', 'c', 'c', 'b', 'a', 'b', 'b', 'b'])
 c2 = pd.Series(['X', 'Y', 'X', 'Y', 'Y', 'Y', 'Y', 'Y', 'X', 'Y'])
-date = pd.Series(['06/22/18', '05/22/18', '03/13/17', '12/01/19', '09/03/07', '09/04/19', '03/22/18', '05/22/18', '03/03/17', '03/03/16'])
+dates = pd.Series(['06/22/18', '05/22/18', '03/13/17', '12/01/19', '09/03/07',
+                  '09/04/19', '03/22/18', '05/22/18', '03/03/17', '03/03/16'])
 
-# Note: str_col is a high cardinality var, can be removed in current implementation
-df1 = pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "str_col": pd.Series([str(i) for i in range(10)])})
-df4 = pd.DataFrame({"c1": c1, "str_col":[str(i) for i in range(10)]}) # add numeric for aggregates
-df5 = pd.DataFrame({"c2": c2, "str_col":[str(i) for i in range(10)]})
+# Note: str_col is a high cardinality var, is removed in current implementation
+df1 = pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "c1": c1, "c2": c2,
+                    "str_col": pd.Series([str(i) for i in range(10)])})
+df_date = pd.DataFrame({"n1": n1, "c1": c1, "str_col": pd.Series([str(i) for i in range(10)]), "dates": dates})
 
 import unittest
 
-class test_transform(unittest.TestCase):
+class TestTransform(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -35,7 +36,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 9)
         result = list(result[op_name + " n1"])
 
         ans = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
@@ -52,7 +53,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + " n1"])
 
         ans = [0.841, 0.909, 0.141, -0.756, -0.958, -0.279, 0.656, 0.989, 0.412, -0.544]
@@ -69,7 +70,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + " n1"])
 
         ans = [0.540, -0.416, -0.989, -0.653, 0.283, 0.960, 0.753, -0.145, -0.911, -0.839]
@@ -86,7 +87,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + " n1"])
 
         ans = [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
@@ -103,7 +104,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + " n1"])
 
         ans = [1, 1.414, 1.732, 2, 2.236, 2.449, 2.645, 2.828, 3, 3.162]
@@ -120,7 +121,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + " n1"])
 
         ans = [0.761, 0.964, 0.995, 0.999, 0.999, 1, 1, 1, 1, 1]
@@ -137,7 +138,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + " n1"])
 
         ans = [0.731, 0.880, 0.952, 0.982, 0.993, 0.997, 0.999, 1, 1, 1]
@@ -154,7 +155,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + " n1"])
 
         ans = [1, 0.5, 0.333, 0.25, 0.2, 0.166, 0.142, 0.125, 0.111, 0.1]
@@ -171,7 +172,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + "(n1, n2)"])
 
         ans = [4, 8, 13, 4, 5, 11, 9, 5, 2, 11]
@@ -188,7 +189,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + "(n1, n2)"])
 
         ans = [-2, -4, -7, 4, 5, 1, 5, 11, 16, 9]
@@ -205,7 +206,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
-        self.assertEqual(len(result.columns), 6)
+        self.assertEqual(len(result.columns), 8)
         result = list(result[op_name + "(n1, n2)"])
 
         ans = [3, 12, 30, 0, 0, 30, 14, -24, -63, 10]
@@ -225,14 +226,243 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + "(n2, n1)", result.columns)
         self.assertIn(op_name + "(n3, n1)", result.columns)
         self.assertIn(op_name + "(n3, n2)", result.columns)
-        self.assertEqual(len(result.columns), 9)
-        result = list(result[op_name + "(n1, n2)"])
+        self.assertEqual(len(result.columns), 11)
+        result = list(result[op_name + "(n2, n1)"])
 
         ans = [3, 3, 3.333, 0, 0, 0.833, 0.285, -0.375, -0.777, 0.1]
 
         for i in range(len(ans)):
             self.assertAlmostEqual(result[i], ans[i])
 
+    def test_min_max_norm(self):
+        op_name = "min_max_norm"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + " n1", result.columns)
+        self.assertIn(op_name + " n2", result.columns)
+        self.assertIn(op_name + " n3", result.columns)
+        self.assertEqual(len(result.columns), 8)
+        result = list(result[op_name + " n1"])
+
+        ans = [0, 0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 1]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_zscore(self):
+        op_name = "zscore"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + " n1", result.columns)
+        self.assertIn(op_name + " n2", result.columns)
+        self.assertIn(op_name + " n3", result.columns)
+        self.assertEqual(len(result.columns), 8)
+        result = list(result[op_name + " n1"])
+
+        ans = [-1.566, -1.218, -0.870, -0.522, -0.174, 0.174, 0.522, 0.870, 1.218, 1.566]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_max_agg(self):
+        op_name = "max_agg"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]", "opt_outs":
+                       "[\"skip_remove_high_cardinality_cat_vars\"]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + "(n1, c1)", result.columns)
+        self.assertIn(op_name + "(n1, c2)", result.columns)
+        self.assertIn(op_name + "(n2, c1)", result.columns)
+        self.assertIn(op_name + "(n2, c2)", result.columns)
+        self.assertIn(op_name + "(n3, c1)", result.columns)
+        self.assertIn(op_name + "(n3, c2)", result.columns)
+        self.assertIn(op_name + "(n1, str_col)", result.columns)
+        self.assertIn(op_name + "(n2, str_col)", result.columns)
+        self.assertIn(op_name + "(n3, str_col)", result.columns)
+
+        self.assertEqual(len(result.columns), 13)
+        result = list(result[op_name + "(n1, c1)"])
+
+        ans = [7, 10, 5, 5, 5, 10, 7, 10, 10, 10]
+
+        for i in range(len(ans)):
+            self.assertEqual(result[i], ans[i])
+
+    def test_min_agg(self):
+        op_name = "min_agg"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + "(n1, c1)", result.columns)
+        self.assertIn(op_name + "(n1, c2)", result.columns)
+        self.assertIn(op_name + "(n2, c1)", result.columns)
+        self.assertIn(op_name + "(n2, c2)", result.columns)
+        self.assertIn(op_name + "(n3, c1)", result.columns)
+        self.assertIn(op_name + "(n3, c2)", result.columns)
+
+        self.assertEqual(len(result.columns), 9)
+        result = list(result[op_name + "(n1, c1)"])
+
+        ans = [1, 2, 3, 3, 3, 2, 1, 2, 2, 2]
+
+        for i in range(len(ans)):
+            self.assertEqual(result[i], ans[i])
+
+    def test_std(self):
+        op_name = "std_agg"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + "(n1, c1)", result.columns)
+        self.assertIn(op_name + "(n1, c2)", result.columns)
+        self.assertIn(op_name + "(n2, c1)", result.columns)
+        self.assertIn(op_name + "(n2, c2)", result.columns)
+        self.assertIn(op_name + "(n3, c1)", result.columns)
+        self.assertIn(op_name + "(n3, c2)", result.columns)
+
+        self.assertEqual(len(result.columns), 9)
+        result = list(result[op_name + "(n1, c1)"])
+
+        ans = [3, 2.828, 0.816, 0.816, 0.816, 2.828, 3, 2.828, 2.828, 2.828]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i])
+
+    def test_count(self):
+        op_name = "count_agg"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + "(n1, c1)", result.columns)
+        self.assertIn(op_name + "(n1, c2)", result.columns)
+        self.assertIn(op_name + "(n2, c1)", result.columns)
+        self.assertIn(op_name + "(n2, c2)", result.columns)
+        self.assertIn(op_name + "(n3, c1)", result.columns)
+        self.assertIn(op_name + "(n3, c2)", result.columns)
+
+        self.assertEqual(len(result.columns), 9)
+        result = list(result[op_name + "(n1, c1)"])
+
+        ans = [2, 5, 3, 3, 3, 5, 2, 5, 5, 5]
+
+        for i in range(len(ans)):
+            self.assertEqual(result[i], ans[i])
+
+    def test_mean(self):
+        op_name = "mean_agg"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + "(n1, c1)", result.columns)
+        self.assertIn(op_name + "(n1, c2)", result.columns)
+        self.assertIn(op_name + "(n2, c1)", result.columns)
+        self.assertIn(op_name + "(n2, c2)", result.columns)
+        self.assertIn(op_name + "(n3, c1)", result.columns)
+        self.assertIn(op_name + "(n3, c2)", result.columns)
+
+        self.assertEqual(len(result.columns), 9)
+        result = list(result[op_name + "(n1, c1)"])
+
+        ans = [4, 7, 4, 4, 4, 7, 4, 7, 7, 7]
+
+        for i in range(len(ans)):
+            self.assertEqual(result[i], ans[i])
+
+    def test_z_agg(self):
+        op_name = "z_agg"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + "(n1, c1)", result.columns)
+        self.assertIn(op_name + "(n1, c2)", result.columns)
+        self.assertIn(op_name + "(n2, c1)", result.columns)
+        self.assertIn(op_name + "(n2, c2)", result.columns)
+        self.assertIn(op_name + "(n3, c1)", result.columns)
+        self.assertIn(op_name + "(n3, c2)", result.columns)
+
+        self.assertEqual(len(result.columns), 9)
+        result = list(result[op_name + "(n1, c1)"])
+
+        ans = [-1, -1.767, -1.224, 0, 1.224, -0.353, 1, 0.353, 0.707, 1.060]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i])
+
+    def test_date_split(self):
+        op_name = "date_split"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df_date.copy()).value
+        self.assertIn("dates_inferred_date_day", result.columns)
+
+        self.assertEqual(len(result.columns), 13)
+        result = list(result["dates_inferred_date_day"])
+
+        ans = [22, 22, 13, 1, 3, 4, 22, 22, 3, 3]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i])
+
+    def test_union(self):
+        op_name = "union"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1, 3], [0, 2, 3]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn("log n1", result.columns)
+        self.assertIn("rc n1", result.columns)
+        self.assertEqual(len(result.columns), 9)
+        result = list(result["log n1"])
+
+        ans = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        result = list(result["rc n1"])
+
+        ans = [1, 0.5, 0.333, 0.25, 0.2, 0.166, 0.142, 0.125, 0.111, 0.1]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_binning_u(self):
+        pass
+    def test_binning_d(self):
+        pass
+    def test_one_term_frequency(self):
+        pass
+    def test_compact_one_hot(self):
+        pass
+
+    def test_invalid_operation(self):
+        op_name = "log"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"stick\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1, 3], [0, 2, 3]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        with self.assertRaises(Exception) as e:
+            result = primitive.produce(inputs=df1.copy()).value
+        print(e.error_code)
 
 if __name__ == '__main__':
     unittest.main()
