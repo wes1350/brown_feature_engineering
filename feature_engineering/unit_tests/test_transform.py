@@ -334,7 +334,7 @@ class TestTransform(unittest.TestCase):
         ans = [3, 2.828, 0.816, 0.816, 0.816, 2.828, 3, 2.828, 2.828, 2.828]
 
         for i in range(len(ans)):
-            self.assertAlmostEqual(result[i], ans[i])
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
 
     def test_count(self):
         op_name = "count"
@@ -400,7 +400,7 @@ class TestTransform(unittest.TestCase):
         ans = [-1, -1.767, -1.224, 0, 1.224, -0.353, 1, 0.353, 0.707, 1.060]
 
         for i in range(len(ans)):
-            self.assertAlmostEqual(result[i], ans[i])
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
 
     def test_date_split(self):
         op_name = "date_split"
