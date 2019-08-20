@@ -81,23 +81,25 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
         # Translate json opt outs
-        if "opt_outs" not in self.hyperparams or self.hyperparams["opt_outs"] is not None:
-            translated_opt_outs = json.loads(self.hyperparams["opt_outs"])
-        else:
+        if "opt_outs" not in self.hyperparams or self.hyperparams["opt_outs"] is None:
             translated_opt_outs = None
+        else:
+            translated_opt_outs = json.loads(self.hyperparams["opt_outs"])
 
+        # Not enough info, just return original data
         if "paths" not in self.hyperparams or "operations" not in self.hyperparams:
-            if self.hyperparams["paths"] is None or self.hyperparams["operations"] is None:
-                return inputs  # Not enough info, just return original data
+            return inputs
+        if self.hyperparams["paths"] is None or self.hyperparams["operations"] is None:
+            return inputs
 
         # Translate rest of json inputs
 
         translated_paths = json.loads(self.hyperparams["paths"])
         translated_op_dict = json.loads(self.hyperparams["operations"])
-        if "names_to_keep" not in self.hyperparams or self.hyperparams["names_to_keep"] is not None:
-            translated_names = json.loads(self.hyperparams["names_to_keep"])
-        else:
+        if "names_to_keep" not in self.hyperparams or self.hyperparams["names_to_keep"] is None:
             translated_names = None
+        else:
+            translated_names = json.loads(self.hyperparams["names_to_keep"])
 
         # reconstruct ops used to create for applyBulkTransform
         reconstructed_op_dict = {}
