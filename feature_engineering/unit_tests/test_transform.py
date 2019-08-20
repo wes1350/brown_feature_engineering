@@ -1,6 +1,7 @@
 from feature_engineering.data_transformation import DataframeTransform
 
 import pandas as pd
+from d3m import container
 
 
 n1 = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
@@ -12,9 +13,11 @@ dates = pd.Series(['06/22/18', '05/22/18', '03/13/17', '12/01/19', '09/03/07',
                   '09/04/19', '03/22/18', '05/22/18', '03/03/17', '03/03/16'])
 
 # Note: str_col is a high cardinality var, is removed in current implementation
-df1 = pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "c1": c1, "c2": c2,
-                    "str_col": pd.Series([str(i) for i in range(10)])})
-df_date = pd.DataFrame({"n1": n1, "c1": c1, "str_col": pd.Series([str(i) for i in range(10)]), "dates": dates})
+df1 = d3m.container.Dataframe(data=pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "c1": c1, "c2": c2,
+                    "str_col": pd.Series([str(i) for i in range(10)])}))
+
+df_date = d3m.container.Dataframe(data=pd.DataFrame({"n1": n1, "c1": c1,
+                                                    "str_col": pd.Series([str(i) for i in range(10)]), "dates": dates}))
 
 import unittest
 
