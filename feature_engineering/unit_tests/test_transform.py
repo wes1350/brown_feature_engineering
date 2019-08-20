@@ -232,7 +232,7 @@ class TestTransform(unittest.TestCase):
         ans = [3, 3, 3.333, 0, 0, 0.833, 0.285, -0.375, -0.777, 0.1]
 
         for i in range(len(ans)):
-            self.assertAlmostEqual(result[i], ans[i])
+            self.assertAlmostEqual(result[i], ans[i], 3)
 
     def test_min_max_norm(self):
         op_name = "min_max_norm"
@@ -268,8 +268,8 @@ class TestTransform(unittest.TestCase):
         for i in range(len(ans)):
             self.assertAlmostEqual(result[i], ans[i], delta=0.001)
 
-    def test_max_agg(self):
-        op_name = "max_agg"
+    def test_max(self):
+        op_name = "max"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]", "opt_outs":
                        "[\"skip_remove_high_cardinality_cat_vars\"]"}
 
@@ -293,8 +293,8 @@ class TestTransform(unittest.TestCase):
         for i in range(len(ans)):
             self.assertEqual(result[i], ans[i])
 
-    def test_min_agg(self):
-        op_name = "min_agg"
+    def test_min(self):
+        op_name = "min"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
@@ -315,7 +315,7 @@ class TestTransform(unittest.TestCase):
             self.assertEqual(result[i], ans[i])
 
     def test_std(self):
-        op_name = "std_agg"
+        op_name = "std"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
                        "paths": "[[0, 1]]"}
 
@@ -337,7 +337,7 @@ class TestTransform(unittest.TestCase):
             self.assertAlmostEqual(result[i], ans[i])
 
     def test_count(self):
-        op_name = "count_agg"
+        op_name = "count"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
                        "paths": "[[0, 1]]"}
 
@@ -359,7 +359,7 @@ class TestTransform(unittest.TestCase):
             self.assertEqual(result[i], ans[i])
 
     def test_mean(self):
-        op_name = "mean_agg"
+        op_name = "mean"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
                        "paths": "[[0, 1]]"}
 
@@ -410,7 +410,7 @@ class TestTransform(unittest.TestCase):
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df_date.copy()).value
         self.assertIn("dates_inferred_date_day", result.columns)
-
+        print(result)
         self.assertEqual(len(result.columns), 13)
         result = list(result["dates_inferred_date_day"])
 
@@ -428,7 +428,7 @@ class TestTransform(unittest.TestCase):
         result = primitive.produce(inputs=df1.copy()).value
         self.assertIn("log n1", result.columns)
         self.assertIn("rc n1", result.columns)
-        self.assertEqual(len(result.columns), 9)
+        self.assertEqual(len(result.columns), 11)
         result = list(result["log n1"])
 
         ans = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
@@ -462,7 +462,8 @@ class TestTransform(unittest.TestCase):
         primitive = DataframeTransform(hyperparams=hyperparams)
         with self.assertRaises(Exception) as e:
             result = primitive.produce(inputs=df1.copy()).value
-        print(e.error_code)
+        print(e)
+        # print(e.error_code)
 
 if __name__ == '__main__':
     unittest.main()
