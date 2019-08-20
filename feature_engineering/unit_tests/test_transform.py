@@ -275,15 +275,15 @@ class TestTransform(unittest.TestCase):
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
-        self.assertIn(op_name + "(n1, c1)", result.columns)
-        self.assertIn(op_name + "(n1, c2)", result.columns)
-        self.assertIn(op_name + "(n2, c1)", result.columns)
-        self.assertIn(op_name + "(n2, c2)", result.columns)
-        self.assertIn(op_name + "(n3, c1)", result.columns)
-        self.assertIn(op_name + "(n3, c2)", result.columns)
-        self.assertIn(op_name + "(n1, str_col)", result.columns)
-        self.assertIn(op_name + "(n2, str_col)", result.columns)
-        self.assertIn(op_name + "(n3, str_col)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n1, str_col)", result.columns)
+        self.assertIn(op_name + "_agg(n2, str_col)", result.columns)
+        self.assertIn(op_name + "_agg(n3, str_col)", result.columns)
 
         self.assertEqual(len(result.columns), 13)
         result = list(result[op_name + "_agg(n1, c1)"])
@@ -299,12 +299,12 @@ class TestTransform(unittest.TestCase):
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
-        self.assertIn(op_name + "(n1, c1)", result.columns)
-        self.assertIn(op_name + "(n1, c2)", result.columns)
-        self.assertIn(op_name + "(n2, c1)", result.columns)
-        self.assertIn(op_name + "(n2, c2)", result.columns)
-        self.assertIn(op_name + "(n3, c1)", result.columns)
-        self.assertIn(op_name + "(n3, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
         result = list(result[op_name + "_agg(n1, c1)"])
@@ -321,12 +321,12 @@ class TestTransform(unittest.TestCase):
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
-        self.assertIn(op_name + "(n1, c1)", result.columns)
-        self.assertIn(op_name + "(n1, c2)", result.columns)
-        self.assertIn(op_name + "(n2, c1)", result.columns)
-        self.assertIn(op_name + "(n2, c2)", result.columns)
-        self.assertIn(op_name + "(n3, c1)", result.columns)
-        self.assertIn(op_name + "(n3, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
         result = list(result[op_name + "_agg(n1, c1)"])
@@ -343,12 +343,12 @@ class TestTransform(unittest.TestCase):
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
-        self.assertIn(op_name + "(n1, c1)", result.columns)
-        self.assertIn(op_name + "(n1, c2)", result.columns)
-        self.assertIn(op_name + "(n2, c1)", result.columns)
-        self.assertIn(op_name + "(n2, c2)", result.columns)
-        self.assertIn(op_name + "(n3, c1)", result.columns)
-        self.assertIn(op_name + "(n3, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
         result = list(result[op_name + "_agg(n1, c1)"])
@@ -365,12 +365,12 @@ class TestTransform(unittest.TestCase):
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
-        self.assertIn(op_name + "(n1, c1)", result.columns)
-        self.assertIn(op_name + "(n1, c2)", result.columns)
-        self.assertIn(op_name + "(n2, c1)", result.columns)
-        self.assertIn(op_name + "(n2, c2)", result.columns)
-        self.assertIn(op_name + "(n3, c1)", result.columns)
-        self.assertIn(op_name + "(n3, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
         result = list(result[op_name + "_agg(n1, c1)"])
@@ -380,19 +380,19 @@ class TestTransform(unittest.TestCase):
         for i in range(len(ans)):
             self.assertEqual(result[i], ans[i])
 
-    def test_zscore_agg(self):
-        op_name = "zscore"
+    def test_z_agg(self):
+        op_name = "z_agg"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
                        "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
-        self.assertIn(op_name + "(n1, c1)", result.columns)
-        self.assertIn(op_name + "(n1, c2)", result.columns)
-        self.assertIn(op_name + "(n2, c1)", result.columns)
-        self.assertIn(op_name + "(n2, c2)", result.columns)
-        self.assertIn(op_name + "(n3, c1)", result.columns)
-        self.assertIn(op_name + "(n3, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n1, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n2, c2)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c1)", result.columns)
+        self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
         result = list(result[op_name + "_agg(n1, c1)"])

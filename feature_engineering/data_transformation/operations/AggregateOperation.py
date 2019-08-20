@@ -95,7 +95,7 @@ class StdOperation(AggregateOperation):
 class ZAggOperation(AggregateOperation):
     def __init__(self):
         super().__init__()
-        self.operation = "zscore"
+        self.operation = "z_agg"
 
 def getAllAggregateOperations():
     return [MinOperation(), MaxOperation(), MeanOperation(), CountOperation(), StdOperation(), ZAggOperation()]
