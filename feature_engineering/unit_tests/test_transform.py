@@ -29,8 +29,8 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        print(df1)
-        result = primitive.produce(inputs=df1).value
+        # print(df1)
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
@@ -49,7 +49,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
@@ -66,7 +66,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
@@ -83,7 +83,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
@@ -100,7 +100,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
@@ -117,7 +117,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
@@ -134,7 +134,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
@@ -151,7 +151,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
@@ -168,7 +168,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
@@ -185,7 +185,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
@@ -202,7 +202,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
@@ -219,7 +219,7 @@ class test_transform(unittest.TestCase):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        result = primitive.produce(inputs=df1).value
+        result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
