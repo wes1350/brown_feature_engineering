@@ -489,7 +489,7 @@ class TestTransform(unittest.TestCase):
     def test_select_names(self):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"union\"}",
                        "paths": "[[0, 1, 3], [0, 2, 3]]",
-                       "names_to_keep": "[\"n1\", \"n2\", \"c2\", \"rc n1\", \"log n3\"]"}
+                       "names_to_keep": "[\"n1\", \"n2\", \"rc n1\", \"log n3\"]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
@@ -510,15 +510,13 @@ class TestTransform(unittest.TestCase):
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
-        print(result)
-        for i in range(len(result.columns)):
-            print(result.columns[i])
         self.assertIn("log n3", result.columns)
         self.assertIn("rc n1", result.columns)
         self.assertIn("rc log n1", result.columns)
         self.assertIn("sum(rc n1, rc log n2)", result.columns)
         self.assertIn("sum(n2, log n3)", result.columns)
-        self.assertEqual(len(result.columns), 68)
+        # 3 (+ 2) - > 6 (+ 2) -> 12 (+ 2) -> 78 (+ 2)
+        self.assertEqual(len(result.columns), 80)
         result = list(result["log n1"])
 
         ans = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
