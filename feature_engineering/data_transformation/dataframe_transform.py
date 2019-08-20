@@ -65,13 +65,12 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 'name': "Brown",
                 'contact': 'mailto:wrunnels@mit.edu',
                 'uris': [
-                    'https://google.com',
-                    'https://mit.edu'
+                    'https://github.com/wes1350/brown_feature_engineering',
                 ],
             },
             'installation': [{
                 'type': metadata_base.PrimitiveInstallationType.PIP,
-                'package_uri': 'https://mit.edu'
+                'package_uri': 'https://github.com/wes1350/brown_feature_engineering'
             }],
             'algorithm_types': ["DATA_CONVERSION"],
             'primitive_family': "DATA_TRANSFORMATION",
@@ -80,7 +79,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     )
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
-        # Translate json opt outs
+        # Translate json preprocessing opt outs
         if "opt_outs" not in self.hyperparams or self.hyperparams["opt_outs"] is None:
             translated_opt_outs = None
         else:

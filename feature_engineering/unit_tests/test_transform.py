@@ -455,40 +455,74 @@ class TestTransform(unittest.TestCase):
         pass
 
     def test_invalid_operation(self):
-        op_name = "log"
-        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"stick\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"stick\", \"2\":\"rc\", \"3\": \"union\"}",
                        "paths": "[[0, 1, 3], [0, 2, 3]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        with self.assertRaises(Exception) as e:
+        with self.assertRaises(Exception):
             result = primitive.produce(inputs=df1.copy()).value
 
     def test_invalid_path_different_ends(self):
-        op_name = "log"
-        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"union\"}",
                        "paths": "[[0, 1], [0, 2, 3]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        with self.assertRaises(Exception) as e:
+        with self.assertRaises(Exception):
             result = primitive.produce(inputs=df1.copy()).value
 
     def test_invalid_path_nonexistent_node(self):
-        op_name = "log"
-        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"union\"}",
                        "paths": "[[0, 1, 4], [0, 2, 4]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        with self.assertRaises(Exception) as e:
+        with self.assertRaises(Exception):
             result = primitive.produce(inputs=df1.copy()).value
 
     def test_invalid_path_nonexistent_path(self):
-        op_name = "log"
-        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"union\"}",
                        "paths": "[[0, 2], [0, 1, 2]]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        with self.assertRaises(Exception) as e:
+        with self.assertRaises(Exception):
             result = primitive.produce(inputs=df1.copy()).value
+
+    def test_select_names(self):
+        op_name = "union"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1, 3], [0, 2, 3]]", "names_to_keep": ["n1", "n2", "c2", "rc n1", "log n3"]}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+
+        self.assertIn("log n3", result.columns)
+        self.assertIn("rc n1", result.columns)
+        self.assertEqual(len(result.columns), 5)
+        result = list(result["log n1"])
+
+        ans = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_multistep_path(self):
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"sum\"}",
+                       "paths": "[[0, 1, 2, 3]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+
+        self.assertIn("log n3", result.columns)
+        self.assertIn("rc n1", result.columns)
+        self.assertIn("rc log n1", result.columns)
+        self.assertIn("sum(rc n1, rc log n2)", result.columns)
+        self.assertIn("sum(n2, log n3)", result.columns)
+        self.assertEqual(len(result.columns), 68)
+        result = list(result["log n1"])
+
+        ans = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
 
 if __name__ == '__main__':
     unittest.main()
