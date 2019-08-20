@@ -81,7 +81,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
         # Translate json opt outs
-        if "opt_outs" not in self.hyperparams["opt_outs"] or self.hyperparams["opt_outs"] is not None:
+        if "opt_outs" not in self.hyperparams or self.hyperparams["opt_outs"] is not None:
             translated_opt_outs = json.loads(self.hyperparams["opt_outs"])
         else:
             translated_opt_outs = None
