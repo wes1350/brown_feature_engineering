@@ -268,6 +268,9 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
         results = Transformer.recompress_categorical_features(reconstructed)
 
         outputs = container.DataFrame(results, generate_metadata=True)
+        print("###")
+        print(results)
+        print("###")
 
         return base.CallResult(outputs)
 
