@@ -13,10 +13,10 @@ dates = pd.Series(['06/22/18', '05/22/18', '03/13/17', '12/01/19', '09/03/07',
                   '09/04/19', '03/22/18', '05/22/18', '03/03/17', '03/03/16'])
 
 # Note: str_col is a high cardinality var, is removed in current implementation
-df1 = container.Dataframe(data=pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "c1": c1, "c2": c2,
+df1 = container.DataFrame(data=pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "c1": c1, "c2": c2,
                     "str_col": pd.Series([str(i) for i in range(10)])}))
 
-df_date = container.Dataframe(data=pd.DataFrame({"n1": n1, "c1": c1,
+df_date = container.DataFrame(data=pd.DataFrame({"n1": n1, "c1": c1,
                                                     "str_col": pd.Series([str(i) for i in range(10)]), "dates": dates}))
 
 import unittest
