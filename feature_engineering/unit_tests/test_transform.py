@@ -10,7 +10,7 @@ c1 = pd.Series(['a', 'b', 'c', 'c', 'c', 'b', 'a', 'b', 'b', 'b'])
 c2 = pd.Series(['X', 'Y', 'X', 'Y', 'Y', 'Y', 'Y', 'Y', 'X', 'Y'])
 date = pd.Series(['06/22/18', '05/22/18', '03/13/17', '12/01/19', '09/03/07', '09/04/19', '03/22/18', '05/22/18', '03/03/17', '03/03/16'])
 
-df1 = pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "str_col":[str(i) for i in range(10)]})
+df1 = pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "str_col": pd.Series([str(i) for i in range(10)])})
 df4 = pd.DataFrame({"c1": c1, "str_col":[str(i) for i in range(10)]}) # add numeric for aggregates
 df5 = pd.DataFrame({"c2": c2, "str_col":[str(i) for i in range(10)]})
 
