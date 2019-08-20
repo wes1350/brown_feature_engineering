@@ -10,6 +10,7 @@ c1 = pd.Series(['a', 'b', 'c', 'c', 'c', 'b', 'a', 'b', 'b', 'b'])
 c2 = pd.Series(['X', 'Y', 'X', 'Y', 'Y', 'Y', 'Y', 'Y', 'X', 'Y'])
 date = pd.Series(['06/22/18', '05/22/18', '03/13/17', '12/01/19', '09/03/07', '09/04/19', '03/22/18', '05/22/18', '03/03/17', '03/03/16'])
 
+# Note: str_col is a high cardinality var, can be removed in current implementation
 df1 = pd.DataFrame({"n1": n1, "n2": n2, "n3": n3, "str_col": pd.Series([str(i) for i in range(10)])})
 df4 = pd.DataFrame({"c1": c1, "str_col":[str(i) for i in range(10)]}) # add numeric for aggregates
 df5 = pd.DataFrame({"c2": c2, "str_col":[str(i) for i in range(10)]})
@@ -30,13 +31,10 @@ class test_transform(unittest.TestCase):
                        "[\"skip_remove_high_cardinality_cat_vars\"]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
-        # print(df1)
         result = primitive.produce(inputs=df1.copy()).value
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        print(result.columns)
-        print(result)
         self.assertEqual(len(result.columns), 7)
         result = list(result[op_name + " n1"])
 
@@ -54,7 +52,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + " n1"])
 
         ans = [0.841, 0.909, 0.141, -0.756, -0.958, -0.279, 0.656, 0.989, 0.412, -0.544]
@@ -71,7 +69,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + " n1"])
 
         ans = [0.540, -0.416, -0.989, -0.653, 0.283, 0.960, 0.753, -0.145, -0.911, -0.839]
@@ -88,7 +86,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + " n1"])
 
         ans = [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
@@ -105,7 +103,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + " n1"])
 
         ans = [1, 1.414, 1.732, 2, 2.236, 2.449, 2.645, 2.828, 3, 3.162]
@@ -122,7 +120,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + " n1"])
 
         ans = [0.761, 0.964, 0.995, 0.999, 0.999, 1, 1, 1, 1, 1]
@@ -130,7 +128,7 @@ class test_transform(unittest.TestCase):
         for i in range(len(ans)):
             self.assertAlmostEqual(result[i], ans[i], delta=0.001)
 
-    def test_signmoid(self):
+    def test_sigmoid(self):
         op_name = "sigmoid"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
@@ -139,7 +137,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + " n1"])
 
         ans = [0.731, 0.880, 0.952, 0.982, 0.993, 0.997, 0.999, 1, 1, 1]
@@ -156,7 +154,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + " n1", result.columns)
         self.assertIn(op_name + " n2", result.columns)
         self.assertIn(op_name + " n3", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + " n1"])
 
         ans = [1, 0.5, 0.333, 0.25, 0.2, 0.166, 0.142, 0.125, 0.111, 0.1]
@@ -173,7 +171,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + "(n1, n2)"])
 
         ans = [4, 8, 13, 4, 5, 11, 9, 5, 2, 11]
@@ -190,7 +188,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + "(n1, n2)"])
 
         ans = [-2, -4, -7, 4, 5, 1, 5, 11, 16, 9]
@@ -207,7 +205,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + "(n1, n2)", result.columns)
         self.assertIn(op_name + "(n1, n3)", result.columns)
         self.assertIn(op_name + "(n2, n3)", result.columns)
-        self.assertEqual(len(result.columns), 7)
+        self.assertEqual(len(result.columns), 6)
         result = list(result[op_name + "(n1, n2)"])
 
         ans = [3, 12, 30, 0, 0, 30, 14, -24, -63, 10]
@@ -227,7 +225,7 @@ class test_transform(unittest.TestCase):
         self.assertIn(op_name + "(n2, n1)", result.columns)
         self.assertIn(op_name + "(n3, n1)", result.columns)
         self.assertIn(op_name + "(n3, n2)", result.columns)
-        self.assertEqual(len(result.columns), 10)
+        self.assertEqual(len(result.columns), 9)
         result = list(result[op_name + "(n1, n2)"])
 
         ans = [3, 3, 3.333, 0, 0, 0.833, 0.285, -0.375, -0.777, 0.1]
