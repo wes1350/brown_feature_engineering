@@ -410,7 +410,6 @@ class TestTransform(unittest.TestCase):
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df_date.copy()).value
         self.assertIn("dates_inferred_date_day", result.columns)
-        print(result)
         self.assertEqual(len(result.columns), 12)
         result = list(result["dates_inferred_date_day"])
 
@@ -496,7 +495,8 @@ class TestTransform(unittest.TestCase):
 
         self.assertIn("log n3", result.columns)
         self.assertIn("rc n1", result.columns)
-        self.assertEqual(len(result.columns), 5)
+        # 4 kept numeric + c1, c2
+        self.assertEqual(len(result.columns), 6)
         result = list(result["log n1"])
 
         ans = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
