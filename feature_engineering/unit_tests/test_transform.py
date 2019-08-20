@@ -28,6 +28,9 @@ class test_transform(unittest.TestCase):
 
         ans_1 = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
 
+        print(result_1)
+        print(ans_1)
+
         for i in range(len(ans_1)):
             self.assertAlmostEqual(result_1[i], ans_1[i], delta=0.001)
 
