@@ -199,14 +199,11 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 if node not in reconstructed_op_dict:
                     raise Exception("Cannot find node " + str(node) + " in given operation dictionary")
         # Initialize FeatureSet for preprocessing, and get its features
-        print("%%%")
-        print(inputs)
+
         root_features = FeatureSet.FeatureSet(data=inputs, only_reconstructing_new_data=True,
                                               preprocess_during_reconstruct=True,
                                               reconstruction_preprocessing_opt_outs=translated_opt_outs).getFeatures()
-        print("###")
-        print(root_features)
-        print("###")
+
         # Now check to see if the current node has one or two parents
         first_parent = None
         second_parent = None

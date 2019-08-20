@@ -232,7 +232,7 @@ class TestTransform(unittest.TestCase):
         ans = [3, 3, 3.333, 0, 0, 0.833, 0.285, -0.375, -0.777, 0.1]
 
         for i in range(len(ans)):
-            self.assertAlmostEqual(result[i], ans[i], 3)
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
 
     def test_min_max_norm(self):
         op_name = "min_max_norm"
@@ -286,7 +286,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "(n3, str_col)", result.columns)
 
         self.assertEqual(len(result.columns), 13)
-        result = list(result[op_name + "(n1, c1)"])
+        result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [7, 10, 5, 5, 5, 10, 7, 10, 10, 10]
 
@@ -307,7 +307,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
-        result = list(result[op_name + "(n1, c1)"])
+        result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [1, 2, 3, 3, 3, 2, 1, 2, 2, 2]
 
@@ -329,7 +329,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
-        result = list(result[op_name + "(n1, c1)"])
+        result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [3, 2.828, 0.816, 0.816, 0.816, 2.828, 3, 2.828, 2.828, 2.828]
 
@@ -351,7 +351,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
-        result = list(result[op_name + "(n1, c1)"])
+        result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [2, 5, 3, 3, 3, 5, 2, 5, 5, 5]
 
@@ -373,15 +373,15 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
-        result = list(result[op_name + "(n1, c1)"])
+        result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [4, 7, 4, 4, 4, 7, 4, 7, 7, 7]
 
         for i in range(len(ans)):
             self.assertEqual(result[i], ans[i])
 
-    def test_z_agg(self):
-        op_name = "z_agg"
+    def test_zscore_agg(self):
+        op_name = "zscore"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}",
                        "paths": "[[0, 1]]"}
 
@@ -395,7 +395,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "(n3, c2)", result.columns)
 
         self.assertEqual(len(result.columns), 9)
-        result = list(result[op_name + "(n1, c1)"])
+        result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [-1, -1.767, -1.224, 0, 1.224, -0.353, 1, 0.353, 0.707, 1.060]
 
@@ -411,7 +411,7 @@ class TestTransform(unittest.TestCase):
         result = primitive.produce(inputs=df_date.copy()).value
         self.assertIn("dates_inferred_date_day", result.columns)
         print(result)
-        self.assertEqual(len(result.columns), 13)
+        self.assertEqual(len(result.columns), 12)
         result = list(result["dates_inferred_date_day"])
 
         ans = [22, 22, 13, 1, 3, 4, 22, 22, 3, 3]
@@ -462,8 +462,33 @@ class TestTransform(unittest.TestCase):
         primitive = DataframeTransform(hyperparams=hyperparams)
         with self.assertRaises(Exception) as e:
             result = primitive.produce(inputs=df1.copy()).value
-        print(e)
-        # print(e.error_code)
+
+    def test_invalid_path_different_ends(self):
+        op_name = "log"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1], [0, 2, 3]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        with self.assertRaises(Exception) as e:
+            result = primitive.produce(inputs=df1.copy()).value
+
+    def test_invalid_path_nonexistent_node(self):
+        op_name = "log"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+                       "paths": "[[0, 1, 4], [0, 2, 4]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        with self.assertRaises(Exception) as e:
+            result = primitive.produce(inputs=df1.copy()).value
+
+    def test_invalid_path_nonexistent_path(self):
+        op_name = "log"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
+                       "paths": "[[0, 2], [0, 1, 2]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        with self.assertRaises(Exception) as e:
+            result = primitive.produce(inputs=df1.copy()).value
 
 if __name__ == '__main__':
     unittest.main()
