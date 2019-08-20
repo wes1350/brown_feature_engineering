@@ -285,7 +285,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "_agg(n2, str_col)", result.columns)
         self.assertIn(op_name + "_agg(n3, str_col)", result.columns)
 
-        self.assertEqual(len(result.columns), 13)
+        self.assertEqual(len(result.columns), 15)
         result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [7, 10, 5, 5, 5, 10, 7, 10, 10, 10]
@@ -306,7 +306,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "_agg(n3, c1)", result.columns)
         self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
-        self.assertEqual(len(result.columns), 9)
+        self.assertEqual(len(result.columns), 11)
         result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [1, 2, 3, 3, 3, 2, 1, 2, 2, 2]
@@ -328,7 +328,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "_agg(n3, c1)", result.columns)
         self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
-        self.assertEqual(len(result.columns), 9)
+        self.assertEqual(len(result.columns), 11)
         result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [3, 2.828, 0.816, 0.816, 0.816, 2.828, 3, 2.828, 2.828, 2.828]
@@ -350,7 +350,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "_agg(n3, c1)", result.columns)
         self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
-        self.assertEqual(len(result.columns), 9)
+        self.assertEqual(len(result.columns), 11)
         result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [2, 5, 3, 3, 3, 5, 2, 5, 5, 5]
@@ -372,7 +372,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "_agg(n3, c1)", result.columns)
         self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
-        self.assertEqual(len(result.columns), 9)
+        self.assertEqual(len(result.columns), 11)
         result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [4, 7, 4, 4, 4, 7, 4, 7, 7, 7]
@@ -394,7 +394,7 @@ class TestTransform(unittest.TestCase):
         self.assertIn(op_name + "_agg(n3, c1)", result.columns)
         self.assertIn(op_name + "_agg(n3, c2)", result.columns)
 
-        self.assertEqual(len(result.columns), 9)
+        self.assertEqual(len(result.columns), 11)
         result = list(result[op_name + "_agg(n1, c1)"])
 
         ans = [-1, -1.767, -1.224, 0, 1.224, -0.353, 1, 0.353, 0.707, 1.060]
