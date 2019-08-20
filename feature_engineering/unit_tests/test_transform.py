@@ -487,9 +487,9 @@ class TestTransform(unittest.TestCase):
             result = primitive.produce(inputs=df1.copy()).value
 
     def test_select_names(self):
-        op_name = "union"
-        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"" + op_name + "\"}",
-                       "paths": "[[0, 1, 3], [0, 2, 3]]", "names_to_keep": ["n1", "n2", "c2", "rc n1", "log n3"]}
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"union\"}",
+                       "paths": "[[0, 1, 3], [0, 2, 3]]",
+                       "names_to_keep": "[\"n1\", \"n2\", \"c2\", \"rc n1\", \"log n3\"]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
@@ -510,7 +510,9 @@ class TestTransform(unittest.TestCase):
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
-
+        print(result)
+        for i in range(len(result.columns)):
+            print(result.columns[i])
         self.assertIn("log n3", result.columns)
         self.assertIn("rc n1", result.columns)
         self.assertIn("rc log n1", result.columns)
