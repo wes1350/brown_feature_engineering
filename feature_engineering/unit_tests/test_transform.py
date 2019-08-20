@@ -26,7 +26,8 @@ class test_transform(unittest.TestCase):
 
     def test_log(self):
         op_name = "log"
-        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]", "opt_outs":
+                       "skip_remove_high_cardinality_cat_vars"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         # print(df1)
