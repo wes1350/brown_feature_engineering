@@ -18,21 +18,117 @@ class test_transform(unittest.TestCase):
         pass
 
     def test_log(self):
-        hyperparams_1 = {"operations": "{\"0\": \"INIT\", \"1\": \"log\"}", "paths": "[[0, 1]]"}
+        op_name = "log"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
-        primitive_1 = DataframeTransform(hyperparams=hyperparams_1)
-        result_1 = primitive_1.produce(inputs=df1).value
-        self.assertIn("log n1", result_1.columns)
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1).value
+        self.assertIn(op_name + " n1", result.columns)
+        result = list(result[op_name + " n1"])
 
-        result_1 = list(result_1["log n1"])
+        ans = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
 
-        ans_1 = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
 
-        print(result_1)
-        print(ans_1)
+    def test_sin(self):
+        op_name = "sin"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
 
-        for i in range(len(ans_1)):
-            self.assertAlmostEqual(result_1[i], ans_1[i], delta=0.001)
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1).value
+        self.assertIn(op_name + " n1", result.columns)
+        result = list(result[op_name + " n1"])
+
+        ans = [0.841, 0.909, 0.141, -0.756, -0.958, -0.279, 0.656, 0.989, 0.412, -0.544]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_cos(self):
+        op_name = "cos"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1).value
+        self.assertIn(op_name + " n1", result.columns)
+        result = list(result[op_name + " n1"])
+
+        ans = [0.540, -0.416, -0.989, -0.653, 0.283, 0.960, 0.753, -0.145, -0.911, -0.839]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_square(self):
+        op_name = "square"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1).value
+        self.assertIn(op_name + " n1", result.columns)
+        result = list(result[op_name + " n1"])
+
+        ans = [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+
+        for i in range(len(ans)):
+            self.assertEqual(result[i], ans[i])
+
+    def test_sqrt(self):
+        op_name = "sqrt"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1).value
+        self.assertIn(op_name + " n1", result.columns)
+        result = list(result[op_name + " n1"])
+
+        ans = [1, 1.414, 1.732, 2, 2.236, 2.449, 2.645, 2.828, 3, 3.162]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_tanh(self):
+        op_name = "tanh"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1).value
+        self.assertIn(op_name + " n1", result.columns)
+        result = list(result[op_name + " n1"])
+
+        ans = [0.761, 0.964, 0.995, 0.999, 0.999, 1, 1, 1, 1, 1]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_signmoid(self):
+        op_name = "sigmoid"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1).value
+        self.assertIn(op_name + " n1", result.columns)
+        result = list(result[op_name + " n1"])
+
+        ans = [0.731, 0.880, 0.952, 0.982, 0.993, 0.997, 0.999, 1, 1, 1]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
+    def test_rc(self):
+        op_name = "rc"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1).value
+        self.assertIn(op_name + " n1", result.columns)
+        result = list(result[op_name + " n1"])
+
+        ans = [1, 0.5, 0.333, 0.25, 0.2, 0.166, 0.142, 0.125, 0.111, 0.1]
+
+        for i in range(len(ans)):
+            self.assertAlmostEqual(result[i], ans[i], delta=0.001)
+
 
 if __name__ == '__main__':
     unittest.main()
