@@ -488,13 +488,13 @@ class TestTransform(unittest.TestCase):
     def test_select_names(self):
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\":\"log\", \"2\":\"rc\", \"3\": \"union\"}",
                        "paths": "[[0, 1, 3], [0, 2, 3]]",
-                       "names_to_keep": "[\"n1\", \"n2\", \"rc n1\", \"log n3\"]"}
+                       "names_to_keep": "[\"n1\", \"n2\", \"rc n3\", \"log n1\"]"}
 
         primitive = DataframeTransform(hyperparams=hyperparams)
         result = primitive.produce(inputs=df1.copy()).value
 
-        self.assertIn("log n3", result.columns)
-        self.assertIn("rc n1", result.columns)
+        self.assertIn("log n1", result.columns)
+        self.assertIn("rc n3", result.columns)
         # 4 kept numeric + c1, c2
         self.assertEqual(len(result.columns), 6)
         result = list(result["log n1"])
