@@ -1,14 +1,9 @@
-import collections
-import os
 import typing
 import json
 
-from d3m import container#, exceptions, utils as d3m_utils
+from d3m import container
 from d3m.metadata import base as metadata_base, hyperparams
 from d3m.primitive_interfaces import base, featurization
-
-# import common_primitives
-# from common_primitives import dataframe_utils
 
 from .operations import UnionOperation, FeatureSelectionOperation, SpatialAggregationOperation, OneArgOperation, \
     TwoArgOperation, AggregateOperation, CompactOneHotOperation, DateSplitOperation, FrequencyOperation, \
@@ -51,7 +46,72 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     columns take values based on previous columns, e.g. log of column values, or sum of two different column values.
     Columns can also be removed with certain operations. Preprocessing steps are also included, but can be opted out of.
 
-    To use this, do [specify paths, ops, etc. conventions]
+    The primitive inputs represent a DAG originating from one node and leading to another. The DAG may "expand" into
+    multiple paths by using several operations (described below) at non-terminal nodes, but ultimately must converge
+    back into a single node. Each node must have an associated operation, which corresponds to some transformation
+    function.
+
+    The DAG structure is given by the paths variable below, while the operations which correspond to each node are
+    specified in the operations hyperparameter.
+
+    Example 1:
+
+    We want to add to our dataframe the columns corresponding to the log of each numerical column.
+
+    The DAG looks like this: 0 (base) -> 1 (log)
+
+    Example 2:
+
+    We want to add columns corresponding to log, and also columns corresponding to date splitting
+
+                                                                               -> 1 (log)
+    The DAG could look like this (nodes 1 and 2 are interchangeable): 0 (base)                   -> 3 (union)
+                                                                               -> 2 (date_split)
+    i.e., paths to the terminal node (3) include 0 -> 1 -> 3 and 0 -> 2 -> 3.
+    Here, union just performs the union of the two dataframes generated (log result, and date_split result)
+
+    Note that the following would produce the same result:
+
+    0 (base) -> 1 (log) -> 2 (date_split)
+
+    As log only acts on numeric columns and date_split only on datetime columns, the result of the log call is not
+    influenced by the date_split operation. Hence union is actually unnecessary here.
+
+    Example 3:
+
+    We want to add columns corresponding to log of each numeric column, sqrt of each numeric column, and the sqrt of the
+    log of each numeric column. Then, we only want to keep a specific subset of the generated columns.
+
+    In this case, the DAG would look like this: 0 (base) -> 1 (sqrt) -> 2 (log)
+
+    Let the set of original numeric columns be C. Then at node 1, we will have generated a dataframe with columns C and
+    sqrt(C), where log C is a set of columns containing exactly all columns of C after a sqrt operation. In other words,
+    the size of the numeric portion of the base dataframe has doubled in column dimension.
+
+    After step 2, we will have generated the sqrt of each column in Union(C, sqrt C), as in step 1 we just added sqrt C
+    to the original C dataframe. So, the dataframe will now be Union(C, sqrt C, log C, log sqrt C), and the dataframe
+    will have quadrupled in size in column space.
+
+
+
+    All hyperparameters described below are to be given in json format.
+
+
+    paths: A list of lists describing paths from the base dataframe to the final result. All paths must start with the
+    first node (0) and end with the final node, whatever it may be. All nodes specified in each path must have
+    corresponding operations specified in the operations argument.
+    -- Example: [[0, 1, 2, 5, 6], [0, 1, 3, 5, 6], [0, 4, 6]]
+    -- Example: [[0, 1]] (simplest, will just do one transformation step)
+
+    operations: A dict mapping nodes of the DAG to operation codes. The base node must have code "INIT"
+    # TODO: remove INIT specification requirement
+    -- Example: {0: "INIT", 1: "log", 2: "sum"}
+
+    names_to_keep: A list of strings corresponding to columns to retain after creation. Useful if we don't want to
+    keep all generated columns. The default value of None retains all generated columns.
+
+    opt_outs: A list of preprocessing steps to opt out of.
+
     """
 
     metadata = metadata_base.PrimitiveMetadata(
