@@ -9,7 +9,7 @@ df1 = pd.DataFrame({"n1": n1, "str":[str(i) for i in range(10)]})
 
 import unittest
 
-class Tests(unittest.TestCase):
+class test_transform(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -28,8 +28,8 @@ class Tests(unittest.TestCase):
 
         ans_1 = [0, 0.693, 1.098, 1.386, 1.609, 1.791, 1.945, 2.079, 2.197, 2.302]
 
-
-        self.assertAlmostEqual(result_1, ans_1)
+        for i in range(len(ans_1)):
+            self.assertAlmostEqual(result_1[i], ans_1[i], delta=0.001)
 
 if __name__ == '__main__':
     unittest.main()
