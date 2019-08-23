@@ -452,7 +452,22 @@ class TestTransform(unittest.TestCase):
     def test_binning_d(self):
         pass
     def test_one_term_frequency(self):
-        pass
+        op_name = "one_term_frequency"
+        hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + " n1", result.columns)
+        self.assertIn(op_name + " n2", result.columns)
+        self.assertIn(op_name + " n3", result.columns)
+        self.assertEqual(len(result.columns), 8)
+        result = list(result[op_name + " n2"])
+
+        ans = [1, 1, 1, 2, 2, 1, 1, 1, 1, 1]
+
+        for i in range(len(ans)):
+            self.assertEqual(result[i], ans[i])
+
     def test_compact_one_hot(self):
         pass
 
