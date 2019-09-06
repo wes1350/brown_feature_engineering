@@ -110,7 +110,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     names_to_keep: A list of strings corresponding to columns to retain after creation. Useful if we don't want to
     keep all generated columns. The default value of None retains all generated columns.
 
-    opt_outs: A list of preprocessing steps to opt out of.
+    opt_outs: A list of preprocessing steps to opt out of. Default is to opt out of none.
 
     """
 
@@ -125,12 +125,12 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 'name': "Brown",
                 'contact': 'mailto:wrunnels@mit.edu',
                 'uris': [
-                    'https://github.com/wes1350/brown_feature_engineering',
+                    'https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering',
                 ],
             },
             'installation': [{
                 'type': metadata_base.PrimitiveInstallationType.PIP,
-                'package_uri': 'https://github.com/wes1350/brown_feature_engineering'
+                'package_uri': 'https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering'
             }],
             'algorithm_types': ["DATA_CONVERSION"],
             'primitive_family': "FEATURE_EXTRACTION",
@@ -139,6 +139,13 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     )
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
+        """
+
+        :param inputs: a pandas dataframe wrapped in a d3m container type
+        :param timeout: ignored
+        :param iterations: ignored
+        :return: transformed dataframe in d3m type
+        """
         # Translate json preprocessing opt outs
         if "opt_outs" not in self.hyperparams or self.hyperparams["opt_outs"] is None:
             translated_opt_outs = None
