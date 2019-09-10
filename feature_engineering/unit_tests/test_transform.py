@@ -463,7 +463,7 @@ class TestTransform(unittest.TestCase):
 
         for i in range(len(ans)):
             self.assertEqual(result[i], ans[i])
-            
+
     def test_binning_d(self):
         pass
 

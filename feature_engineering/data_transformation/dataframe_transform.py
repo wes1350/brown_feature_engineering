@@ -277,7 +277,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 reconstructed_op_dict[initial_node] = InitializationOperation.InitializationOperation()
             else:
                 # If it is already specified with a different operation, raise Exception
-                if translated_op_dict[initial_node] != "INIT":
+                if translated_op_dict[str(initial_node)] != "INIT":
                     raise ValueError("Initial node specified with non-initialization operation. Nodes are specified "
                                      "with the operations that yield them from their parents, and the root node has no "
                                      "parent.")
