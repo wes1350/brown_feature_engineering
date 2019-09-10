@@ -51,7 +51,7 @@ step_5 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.data_transf
 step_5.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='steps.4.produce')
 step_5.add_output('produce')
 step_5.add_hyperparameter(name='paths', argument_type=ArgumentType.VALUE, data="[[0, 1]]")
-step_5.add_hyperparameter(name='operations', argument_type=ArgumentType.VALUE, data="{\"0\": \"INIT\", \"1\": \"log\"}")
+step_5.add_hyperparameter(name='operations', argument_type=ArgumentType.VALUE, data="{\"1\": \"log\"}")
 pipeline_description.add_step(step_5)
 
 # Step 7: random_forest
