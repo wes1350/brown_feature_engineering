@@ -103,15 +103,24 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     -- Example: [[0, 1, 2, 5, 6], [0, 1, 3, 5, 6], [0, 4, 6]]
     -- Example: [[0, 1]] (simplest, will just do one transformation step)
 
-    operations: A dict mapping nodes of the DAG to operation codes. The base node must have code "INIT"
-    # TODO: remove INIT specification requirement
-    -- Example: {0: "INIT", 1: "log", 2: "sum"}
+    operations: A dict mapping nodes of the DAG to operation codes. The initial node operation is not specified (or can
+                be specified with the dummy operation "INIT")
+    -- Example: {1: "log", 2: "sum"} or {0: "INIT", 1: "log", 2: "sum"}
 
     names_to_keep: A list of strings corresponding to columns to retain after creation. Useful if we don't want to
     keep all generated columns. The default value of None retains all generated columns.
 
     opt_outs: A list of preprocessing steps to opt out of. Default is to opt out of none.
 
+    -- Options: "skip_all": skip all preprocessing steps
+                "skip_drop_index": drop the column "d3mIndex" if it exists
+                "skip_infer_dates": don't try to produce datetime columns from names containing "date" or "Date"
+                "skip_remove_full_NA_columns": don't remove columns whose values are all NA
+                "skip_fill_in_categorical_NAs": don't replace NA values with the value "__missing__" in categorical cols
+                "skip_impute_with_median": don't impute NA values with the median in numeric columns
+                "skip_one_hot_encode": don't one hot encode categorical columns
+                "skip_remove_high_cardinality_cat_vars": don't remove categorical columns with mostly unique values
+                "skip_rename_for_xgb": don't rename columns to comply with XGBoost requirements
     """
 
     metadata = metadata_base.PrimitiveMetadata(
@@ -250,20 +259,35 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
         if len(final_node_list) > 1:
             for node in final_node_list[1:]:
                 if node != final_node_list[0]:
-                    raise Exception("Some of the given paths terminate with different nodes")
+                    raise ValueError("Some of the given paths terminate with different nodes")
         desired_node = final_node_list[0]
 
-        # More checks? Like if all given labels in paths exist in op dict?
+        # Make sure all paths begin from the same node
+        if len(translated_paths) > 0:
+            initial_node = translated_paths[0][0]
+            for path in translated_paths:
+                if path[0] != initial_node:
+                    raise ValueError("Some paths have different starting nodes")
+
+        # If initial node does not have the INIT operation mapped to it, add it automatically.
+        # If it is already specified with the INIT operation, keep it
+        if len(translated_paths) > 0:
+            initial_node = translated_paths[0][0]
+            if initial_node not in reconstructed_op_dict:
+                reconstructed_op_dict[initial_node] = InitializationOperation.InitializationOperation()
+            else:
+                # If it is already specified with a different operation, raise Exception
+                if translated_op_dict[initial_node] != "INIT":
+                    raise ValueError("Initial node specified with non-initialization operation. Nodes are specified "
+                                     "with the operations that yield them from their parents, and the root node has no "
+                                     "parent.")
+
         if desired_node not in reconstructed_op_dict:
-            # print(reconstructed_op_dict, translated_op_dict, operations)
-            # print(desired_node)
-            # print(paths, translated_paths)
-            # print(names_to_keep, translated_names)
-            raise Exception("Node to be constructed not found in given operation dictionary")
+            raise ValueError("Node to be constructed not found in given operation dictionary")
         for path in translated_paths:
             for node in path:
                 if node not in reconstructed_op_dict:
-                    raise Exception("Cannot find node " + str(node) + " in given operation dictionary")
+                    raise ValueError("Cannot find node " + str(node) + " in given operation dictionary")
         # Initialize FeatureSet for preprocessing, and get its features
 
         root_features = FeatureSet.FeatureSet(data=inputs, only_reconstructing_new_data=True,
@@ -279,7 +303,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             elif path[-1] != first_parent:
                 if second_parent is not None:
                     if path[-1] != second_parent:
-                        raise Exception("Paths indicate desired node has more than 2 parents!")
+                        raise ValueError("Paths indicate desired node has more than 2 parents!")
                 else:
                     second_parent = path[-1]
 

@@ -448,9 +448,25 @@ class TestTransform(unittest.TestCase):
             self.assertAlmostEqual(result[i], ans[i], delta=0.001)
 
     def test_binning_u(self):
-        pass
+        op_name = "binning_u"
+        hyperparams = {"operations": "{\"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
+
+        primitive = DataframeTransform(hyperparams=hyperparams)
+        result = primitive.produce(inputs=df1.copy()).value
+        self.assertIn(op_name + " n1", result.columns)
+        self.assertIn(op_name + " n2", result.columns)
+        self.assertIn(op_name + " n3", result.columns)
+        self.assertEqual(len(result.columns), 8)
+        result = list(result[op_name + " n3"])
+
+        ans = [9, 9, 9, 0, 9, 8, 8, 8, 8, 8]
+
+        for i in range(len(ans)):
+            self.assertEqual(result[i], ans[i])
+            
     def test_binning_d(self):
         pass
+
     def test_one_term_frequency(self):
         op_name = "one_term_frequency"
         hyperparams = {"operations": "{\"0\": \"INIT\", \"1\": \"" + op_name + "\"}", "paths": "[[0, 1]]"}
