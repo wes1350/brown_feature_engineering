@@ -145,7 +145,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 'name': "Brown",
                 'contact': 'mailto:wrunnels@mit.edu',
                 'uris': [
-                    'https://github.com/wes1350/brown_feature_engineering',
+                    _REPOSITORY,
                 ],
             },
             'installation': [{
