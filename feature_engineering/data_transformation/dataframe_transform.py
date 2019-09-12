@@ -125,14 +125,14 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 "skip_rename_for_xgb": don't rename columns to comply with XGBoost requirements
     """
 
-    TAG_NAME = "{git_commit}".format(git_commit=utils.current_git_commit(os.path.dirname(__file__)), )
-    REPOSITORY = 'https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering'
-    if TAG_NAME:
-        PACKAGE_URI = "git+" + REPOSITORY + "@" + TAG_NAME
+    _TAG_NAME = "{git_commit}".format(git_commit=utils.current_git_commit(os.path.dirname(__file__)), )
+    _REPOSITORY = 'https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering'
+    if _TAG_NAME:
+        _PACKAGE_URI = "git+" + _REPOSITORY + "@" + _TAG_NAME
     else:
-        PACKAGE_URI = "git+" + REPOSITORY
-    PACKAGE_NAME = 'brown_feature_engineering'
-    PACKAGE_URI = PACKAGE_URI + "#egg=" + PACKAGE_NAME
+        _PACKAGE_URI = "git+" + _REPOSITORY
+    _PACKAGE_NAME = 'brown_feature_engineering'
+    _PACKAGE_URI = _PACKAGE_URI + "#egg=" + _PACKAGE_NAME
 
     metadata = metadata_base.PrimitiveMetadata(
         {
@@ -151,7 +151,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             'installation': [{
                 'type': metadata_base.PrimitiveInstallationType.PIP,
                 # 'package_uri': 'git+https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering@master#egg=brown_feature_engineering'
-                'package_uri': PACKAGE_URI
+                'package_uri': _PACKAGE_URI
             }],
             'algorithm_types': ["DATA_CONVERSION"],
             'primitive_family': "FEATURE_EXTRACTION",
