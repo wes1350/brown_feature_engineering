@@ -126,7 +126,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     """
 
     _TAG_NAME = "{git_commit}".format(git_commit=utils.current_git_commit(os.path.dirname(__file__)), )
-    _REPOSITORY = 'https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering'
+    _REPOSITORY = 'https://github.com/wes1350/brown_feature_engineering'
     if _TAG_NAME:
         _PACKAGE_URI = "git+" + _REPOSITORY + "@" + _TAG_NAME
     else:
@@ -145,7 +145,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 'name': "Brown",
                 'contact': 'mailto:wrunnels@mit.edu',
                 'uris': [
-                    'https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering',
+                    'https://github.com/wes1350/brown_feature_engineering',
                 ],
             },
             'installation': [{
