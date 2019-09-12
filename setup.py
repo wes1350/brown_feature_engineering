@@ -9,6 +9,7 @@ setuptools.setup(
     description='Package for feature engineering',
     license='MIT',
     packages=setuptools.find_packages(),
+    url='https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering.git',
     entry_points={
         'd3m.primitives': [
             'data_transformation.feature_transform.Brown = feature_engineering.data_transformation:DataframeTransform'
