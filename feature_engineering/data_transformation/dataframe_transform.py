@@ -1,9 +1,11 @@
 import typing
 import json
+import os
 
 from d3m import container
 from d3m.metadata import base as metadata_base, hyperparams
 from d3m.primitive_interfaces import base, featurization
+from d3m import utils
 
 from .operations import UnionOperation, FeatureSelectionOperation, SpatialAggregationOperation, OneArgOperation, \
     TwoArgOperation, AggregateOperation, CompactOneHotOperation, DateSplitOperation, FrequencyOperation, \
@@ -123,6 +125,15 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 "skip_rename_for_xgb": don't rename columns to comply with XGBoost requirements
     """
 
+    TAG_NAME = "{git_commit}".format(git_commit=utils.current_git_commit(os.path.dirname(__file__)), )
+    REPOSITORY = 'https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering'
+    if TAG_NAME:
+        PACKAGE_URI = "git+" + REPOSITORY + "@" + TAG_NAME
+    else:
+        PACKAGE_URI = "git+" + REPOSITORY
+    PACKAGE_NAME = 'brown_feature_engineering'
+    PACKAGE_URI = PACKAGE_URI + "#egg=" + PACKAGE_NAME
+
     metadata = metadata_base.PrimitiveMetadata(
         {
             'id': '99951ce7-193a-408d-96f0-87164b9a2b26',
@@ -139,7 +150,8 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             },
             'installation': [{
                 'type': metadata_base.PrimitiveInstallationType.PIP,
-                'package_uri': 'git+https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering@master#egg=brown_feature_engineering'
+                # 'package_uri': 'git+https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering@master#egg=brown_feature_engineering'
+                'package_uri': PACKAGE_URI
             }],
             'algorithm_types': ["DATA_CONVERSION"],
             'primitive_family': "FEATURE_EXTRACTION",
