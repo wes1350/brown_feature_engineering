@@ -139,7 +139,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             },
             'installation': [{
                 'type': metadata_base.PrimitiveInstallationType.PIP,
-                'package_uri': 'https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering'
+                'package_uri': 'git+https://gitlab.datadrivendiscovery.org/wrunnels/brown_feature_engineering@master#egg=brown_feature_engineering'
             }],
             'algorithm_types': ["DATA_CONVERSION"],
             'primitive_family': "FEATURE_EXTRACTION",
