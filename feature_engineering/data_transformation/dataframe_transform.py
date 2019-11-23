@@ -112,7 +112,8 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     -- Example: {1: "log", 2: "sum"} or {0: "INIT", 1: "log", 2: "sum"}
 
     names_to_keep: A list of strings corresponding to columns to retain after creation. Useful if we don't want to
-    keep all generated columns. The default value of None retains all generated columns.
+    keep all generated columns. The default value of None retains all generated columns. Note that all original columns
+    are re-added at the end of the primitive operation, so there is no need to specify them directly.
 
     opt_outs: A list of preprocessing steps to opt out of. Default is to opt out of none.
 
@@ -342,6 +343,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                                                            skip_fs_for_reconstruction=True)
 
         # If categorical variable values unseen in the previous run are now present, keep them
+        # Also make sure we don't remove categorical variables
         full_cols = reconstructed.columns.tolist()
         dummy_cols = [name for name in full_cols if "__dummy__" in name]
 
