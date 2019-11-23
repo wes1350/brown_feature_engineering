@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='brown_feature_engineering',
-    version='0.0.1',
+    version='0.1.1',
     author='Brown',
     maintainer='Wesley Runnels',
     maintainer_email='wrunnels@mit.edu',

@@ -1,16 +1,10 @@
-try:
-    from operations.UnionOperation import UnionOperation
-    from operations.DateSplitOperation import DateSplitOperation
-    from operations.FeatureSelectionOperation import FeatureSelectionOperation
-    from operations.CompactOneHotOperation import CompactOneHotOperation
-except ModuleNotFoundError:
-    from .operations.UnionOperation import UnionOperation
-    from .operations.DateSplitOperation import DateSplitOperation
-    from .operations.FeatureSelectionOperation import FeatureSelectionOperation
-    from .operations.CompactOneHotOperation import CompactOneHotOperation
+from .operations.UnionOperation import UnionOperation
+from .operations.DateSplitOperation import DateSplitOperation
+from .operations.FeatureSelectionOperation import FeatureSelectionOperation
+from .operations.CompactOneHotOperation import CompactOneHotOperation
 
-import numpy as np
 import pandas as pd
+from sklearn.preprocessing import Imputer
 
 
 def applyBulkTransform(rootDF, op, nodeOpDict, firstPathsFromRoot, secondPathsFromRoot=None, target_for_fs=None,
@@ -217,3 +211,139 @@ def recompress_categorical_features(df):
         df.drop(relevant_dummies, inplace=True, axis=1)
         df[cat_var_name] = original_cat_var_col
     return df
+
+
+def preprocess(data_input, opt_outs=None):
+    """
+    Pre-process the data according to given parameters
+    :param data_input: original data (pandas df) before pre-processing
+    :param opt_outs: list (or None), specifying which pre=processing steps to opt -out- of
+    :return: pre-processed data
+    """
+
+    if opt_outs is None:
+        opt_outs = []
+    # "all" signifies to skip all preprocessing steps
+    if "skip_all" in opt_outs:
+        return data_input
+
+    # Don't edit the original dataframe; copy it first
+    data = data_input.copy()
+
+    # Drop index as it is redundant
+    if "skip_drop_index" not in opt_outs:
+        data.drop("d3mIndex", axis=1, errors="ignore", inplace=True)
+    # Infer dates from columns with the word "date" or "Date" in them
+    if "skip_infer_dates" not in opt_outs:
+        new_date_cols = {}  # Hold new inferred date columns, so we don't double-infer new columns as we add them
+        for c in data.columns:
+            if "date_inferred_date_dayofweek_inferred_date" == c:
+                raise Exception
+            if "_inferred_date" in c:
+                continue
+            if "date" in c or "Date" in c:
+                if "__dummy__" not in c:
+                    try:
+                        # input[c + "_inferred_date"] = pd.to_datetime(data[c], infer_datetime_format=True,
+                        #                                                             errors="raise")
+                        new_date_cols[c + "_inferred_date"] = pd.to_datetime(data[c], infer_datetime_format=True,
+                                                                             errors="raise")
+                        # print("Inferred that feature \"" + c + "\" is a datetime feature ")
+                    except ValueError:  # Could not parse date correctly, could possibly not be a date
+                        # feature despite name (or NA values present...)
+                        pass
+        for c in new_date_cols:
+            data[c] = new_date_cols[c]
+    # Handle NA or missing values
+
+    # First, get rid of any columns that are all NAs, as they are useless
+    if "skip_remove_full_NA_columns" not in opt_outs:
+        full_na_columns = []
+        for i in range(data.shape[1]):
+            if data.iloc[:, i].isnull().all():
+                full_na_columns.append(i)
+        if len(full_na_columns) > 0:
+            # print("The following features contained only NA values, so they are being removed: ",
+            #       [data.columns[x] for x in full_na_columns])
+            data.drop([data.columns[x] for x in full_na_columns], axis=1, inplace=True)
+
+    # Next, fill categorical variable NAs with "__missing__"
+    if "skip_fill_in_categorical_NAs" not in opt_outs:
+        categorical_column_names = data.select_dtypes(include=['object']).columns.tolist()
+
+        for c in categorical_column_names:
+            data[c] = data[c].fillna("__missing__")
+
+    # Next, fill in NA values in numeric features with median column values
+    if "skip_impute_with_median" not in opt_outs:
+        try:
+            imp_median = Imputer(strategy='median')
+            numeric_subset = data.select_dtypes(include="number")
+
+            if numeric_subset.shape[1] > 0 and numeric_subset.isnull().values.any():
+                # print("Data has NA values in numeric data, so replacing these values with median value by feature")
+                data = pd.concat([pd.DataFrame(imp_median.fit_transform(numeric_subset),
+                                               columns=numeric_subset.columns,
+                                               index=numeric_subset.index),
+                                  data.select_dtypes(exclude="number")], axis=1)
+        except Exception:
+            # For some reason, could not impute the missing values. Has not occurred, but perhaps a possibility.
+            # So in this case we just remove NA columns.
+            # print("Could not impute missing values for some reason! Removing columns with NAs instead!")
+
+            # Remove features with NA values, as our evaluation cannot handle it. Should be numeric and datetime features only now
+            # nCols = data.shape[1]
+            input_col_drop = data.dropna(axis=1)
+            # newNCols = input_col_drop.shape[1]
+
+            # if newNCols < nCols:
+            #     pColsDropped = (nCols - newNCols) / nCols
+            # print("Data set had NA values, so we removed " + str(nCols - newNCols) + " of " + str(nCols) +
+            #       " original features " + "(" + str(round(100 * pColsDropped, 2)) + "%)")
+            data = input_col_drop
+
+    # One-hot encode the data using pandas get_dummies
+    if "skip_one_hot_encode" not in opt_outs:
+        data = pd.get_dummies(data, prefix_sep="__dummy__")
+
+    # Some categorical variables are not useful, because there are not enough of the same values. For example, if
+    # the variable is a string of a city name, and each data point is a different city, this variable will be of
+    # no use. So, to trim our dataset and prevent a sometimes extreme excess of features, we remove such variables.
+
+    # For now, we just remove variables if they are "categorical", but each value is unique.
+    if "skip_remove_high_cardinality_cat_vars" not in opt_outs:
+        unique_value_proportion_deletion_threshold = 0.8
+
+        num_instances = data.shape[0]
+
+        unique_cat_var_counts = {}
+        for c in data.columns:
+            if "__dummy__" in c:
+                if c.split("__dummy__")[0] not in unique_cat_var_counts:
+                    unique_cat_var_counts[c.split("__dummy__")[0]] = 1
+                else:
+                    unique_cat_var_counts[c.split("__dummy__")[0]] += 1
+
+        prefixes_to_remove = []
+        for c_prefix in unique_cat_var_counts:
+            if unique_cat_var_counts[c_prefix] >= unique_value_proportion_deletion_threshold * num_instances:
+                # each value of this categorical variable is unique
+                prefixes_to_remove.append(c_prefix)
+                # print("Identified the feature \"" + c_prefix + "\" as being an almost uniquely valued categorical"
+                #                                                " variable (p = " + str(
+                #     round(unique_cat_var_counts[c_prefix] / self.numInstances, 2)) + "). Deleting!")
+        # Now remove the features we identified as being useless
+        columns_to_remove = []
+        for c in data.columns:
+            if "__dummy__" in c:
+                if c.split("__dummy__")[0] in prefixes_to_remove:
+                    columns_to_remove.append(c)
+        data = data.drop(columns_to_remove, axis=1)
+
+    # Rename features for XGBoost - it does not accept "[", "]" or "<" in feature names
+    if "skip_rename_for_xgb" not in opt_outs:
+        # if USE_XGB:
+        new_names = [name.replace("[", "__lb__").replace("]", "__rb__").replace("<", "__lt__") for name in
+                     data.columns]
+        data.columns = new_names
+    return data

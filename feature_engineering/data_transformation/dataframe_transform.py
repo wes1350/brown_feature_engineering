@@ -1,6 +1,7 @@
 import typing
 import json
 import os
+from collections import OrderedDict
 
 from d3m import container
 from d3m.metadata import base as metadata_base, hyperparams
@@ -10,7 +11,6 @@ from d3m import utils
 from .operations import UnionOperation, FeatureSelectionOperation, SpatialAggregationOperation, OneArgOperation, \
     TwoArgOperation, AggregateOperation, CompactOneHotOperation, DateSplitOperation, FrequencyOperation, \
     StatisticalOperation, InitializationOperation
-from . import FeatureSet
 from . import Transformer
 
 __all__ = ('DataframeTransformPrimitive',)
@@ -47,6 +47,8 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     A primitive which transforms a dataframe by adding or removing columns based on the operations specified. Additional
     columns take values based on previous columns, e.g. log of column values, or sum of two different column values.
     Columns can also be removed with certain operations. Preprocessing steps are also included, but can be opted out of.
+    The original data of the input will be re-added in its original form if removed or edited during the operation of
+    the primitive. There is no guarantee on the order of the columns in the returned dataframe.
 
     The primitive inputs represent a DAG originating from one node and leading to another. The DAG may "expand" into
     multiple paths by using several operations (described below) at non-terminal nodes, but ultimately must converge
@@ -87,7 +89,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     In this case, the DAG would look like this: 0 (base) -> 1 (sqrt) -> 2 (log)
 
     Let the set of original numeric columns be C. Then at node 1, we will have generated a dataframe with columns C and
-    sqrt(C), where log C is a set of columns containing exactly all columns of C after a sqrt operation. In other words,
+    sqrt(C), where sqrt C is a set of columns containing exactly all columns of C after a sqrt operation. In other words,
     the size of the numeric portion of the base dataframe has doubled in column dimension.
 
     After step 2, we will have generated the sqrt of each column in Union(C, sqrt C), as in step 1 we just added sqrt C
@@ -137,7 +139,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     metadata = metadata_base.PrimitiveMetadata(
         {
             'id': '99951ce7-193a-408d-96f0-87164b9a2b26',
-            'version': '0.1.0',
+            'version': '0.1.1',
             'name': "Feature Engineering Dataframe Transformer",
             'keywords': ['feature engineering', 'transform'],
             'python_path': 'd3m.primitives.data_transformation.feature_transform.Brown',
@@ -161,7 +163,6 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> base.CallResult[Outputs]:
         """
-
         :param inputs: a pandas dataframe wrapped in a d3m container type
         :param timeout: ignored
         :param iterations: ignored
@@ -243,24 +244,24 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 reconstructed_op_dict[int(label)] = StatisticalOperation.BinningDOperation()
             elif translated_op_dict[label] == "union":
                 reconstructed_op_dict[int(label)] = UnionOperation.UnionOperation()
-            elif translated_op_dict[label] == "spatial_min":
-                reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMinOperation()
-            elif translated_op_dict[label] == "spatial_max":
-                reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMaxOperation()
-            elif translated_op_dict[label] == "spatial_mean":
-                reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMeanOperation()
-            elif translated_op_dict[label] == "spatial_count":
-                reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialCountOperation()
-            elif translated_op_dict[label] == "spatial_std":
-                reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialStdOperation()
-            elif translated_op_dict[label] == "spatial_z_agg":
-                reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialZAggOperation()
+            # elif translated_op_dict[label] == "spatial_min":
+            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMinOperation()
+            # elif translated_op_dict[label] == "spatial_max":
+            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMaxOperation()
+            # elif translated_op_dict[label] == "spatial_mean":
+            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMeanOperation()
+            # elif translated_op_dict[label] == "spatial_count":
+            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialCountOperation()
+            # elif translated_op_dict[label] == "spatial_std":
+            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialStdOperation()
+            # elif translated_op_dict[label] == "spatial_z_agg":
+            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialZAggOperation()
             elif translated_op_dict[label] == "one_term_frequency":
                 reconstructed_op_dict[int(label)] = FrequencyOperation.OneTermFrequencyOperation()
-            elif translated_op_dict[label] == "two_term_frequency":
-                reconstructed_op_dict[int(label)] = FrequencyOperation.TwoTermFrequencyOperation()
-            elif translated_op_dict[label] == "compact_one_hot":
-                reconstructed_op_dict[int(label)] = CompactOneHotOperation.CompactOneHotOperation()
+            # elif translated_op_dict[label] == "two_term_frequency":
+            #     reconstructed_op_dict[int(label)] = FrequencyOperation.TwoTermFrequencyOperation()
+            # elif translated_op_dict[label] == "compact_one_hot":
+            #     reconstructed_op_dict[int(label)] = CompactOneHotOperation.CompactOneHotOperation()
             else:
                 raise ValueError("Could not identify an operation with given name: " + translated_op_dict[label])
 
@@ -300,11 +301,9 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             for node in path:
                 if node not in reconstructed_op_dict:
                     raise ValueError("Cannot find node " + str(node) + " in given operation dictionary")
-        # Initialize FeatureSet for preprocessing, and get its features
 
-        root_features = FeatureSet.FeatureSet(data=inputs, only_reconstructing_new_data=True,
-                                              preprocess_during_reconstruct=True,
-                                              reconstruction_preprocessing_opt_outs=translated_opt_outs).getFeatures()
+        # Preprocess inputs
+        root_features = Transformer.preprocess(data_input=inputs, opt_outs=translated_opt_outs)
 
         # Now check to see if the current node has one or two parents
         first_parent = None
@@ -357,7 +356,13 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
             # Remove duplicate columns too; not sure if that will affect things yet
             try:
-                reconstructed = reconstructed[list(set(valid_names + dummy_cols))]
+                # reconstructed = reconstructed[list(set(valid_names + dummy_cols))]
+                # combined_names = valid_names
+                # for name in dummy_cols:
+                #     if name not in combined_names:
+                #         combined_names.append(name)
+                # reconstructed = reconstructed[combined_names]
+                reconstructed = reconstructed[list(OrderedDict.fromkeys(list(valid_names + dummy_cols)))]
 
                 # Also remove any date time features we created
                 reconstructed = reconstructed.select_dtypes(exclude="datetime")
@@ -368,6 +373,23 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
         # Remove dummy columns
         results = Transformer.recompress_categorical_features(reconstructed)
+
+        # Sometimes during preprocessing we rename certain columns because XGB can't handle '[', ']', or '<' in names.
+        # So we switch the names of these columns back to the original names now that feature engineering is done.
+        for name in results.columns:
+            if "__lb__" in name or "__rb__" in name or "__lt__" in name:
+                results[name.replace("__lb__", "[").replace("__rb__", "]").replace("__lt__", "<")] = results[name]
+                results.drop(columns=[name])
+
+        # Finally, make sure we keep all the old columns. Replace preprocessed old columns with the originals, and add them
+        # back if we removed them
+        for col in inputs.columns:
+            results[col] = inputs[col]
+
+        # If d3mIndex column is included, move back to front
+        cols = list(results.columns)
+        cols.insert(0, cols.pop(cols.index('d3mIndex')))
+        results = results.ix[:, cols]
 
         outputs = container.DataFrame(results)
 
