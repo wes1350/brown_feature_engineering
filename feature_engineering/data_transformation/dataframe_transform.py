@@ -388,8 +388,9 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
 
         # If d3mIndex column is included, move back to front
         cols = list(results.columns)
-        cols.insert(0, cols.pop(cols.index('d3mIndex')))
-        results = results.ix[:, cols]
+        if 'd3mIndex' in cols:
+            cols.insert(0, cols.pop(cols.index('d3mIndex')))
+            results = results.ix[:, cols]
 
         outputs = container.DataFrame(results)
 
