@@ -64,8 +64,10 @@ pipeline_description.add_step(step_6)
 # Step 8: construct_predictions
 step_7 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.data_transformation.construct_predictions.Common'))
 step_7.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='steps.6.produce')
+step_7.add_argument(name='reference', argument_type=ArgumentType.CONTAINER, data_reference='steps.1.produce')
 step_7.add_output('produce')
 pipeline_description.add_step(step_7)
+
 
 # Final Output
 pipeline_description.add_output(name='output predictions', data_reference='steps.7.produce')
