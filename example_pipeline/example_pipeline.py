@@ -2,8 +2,8 @@ from d3m import index
 from d3m.metadata.base import ArgumentType
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 
-# -> dataset_to_dataframe -> column_parser -> extract_columns_by_semantic_types(attributes) -> imputer -> random_forest
-#                                             extract_columns_by_semantic_types(targets)    ->            ^
+# -> dataset_to_dataframe -> column_parser -> extract_columns_by_semantic_types(attributes) -> imputer -> feature_engineering -> random_forest ->
+#                                             extract_columns_by_semantic_types(targets)    ->                                   ^
 
 # Creating pipeline
 pipeline_description = Pipeline()
@@ -61,8 +61,14 @@ step_6.add_argument(name='outputs', argument_type=ArgumentType.CONTAINER, data_r
 step_6.add_output('produce')
 pipeline_description.add_step(step_6)
 
+# Step 8: construct_predictions
+step_7 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.data_transformation.construct_predictions.Common'))
+step_7.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='steps.6.produce')
+step_7.add_output('produce')
+pipeline_description.add_step(step_7)
+
 # Final Output
-pipeline_description.add_output(name='output predictions', data_reference='steps.6.produce')
+pipeline_description.add_output(name='output predictions', data_reference='steps.7.produce')
 
 # Output to YAML
 # print(pipeline_description.to_yaml())

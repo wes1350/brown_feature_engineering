@@ -221,15 +221,13 @@ def preprocess(data_input, opt_outs=None):
     :return: pre-processed data
     """
 
+    # Don't edit the original dataframe; copy it first
+    data = data_input.copy()
     if opt_outs is None:
         opt_outs = []
     # "all" signifies to skip all preprocessing steps
     if "skip_all" in opt_outs:
-        return data_input
-
-    # Don't edit the original dataframe; copy it first
-    data = data_input.copy()
-
+        return data
     # Drop index as it is redundant
     if "skip_drop_index" not in opt_outs:
         data.drop("d3mIndex", axis=1, errors="ignore", inplace=True)
