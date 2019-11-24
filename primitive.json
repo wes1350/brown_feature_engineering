@@ -1,0 +1,226 @@
+{
+    "id": "99951ce7-193a-408d-96f0-87164b9a2b26",
+    "version": "0.1.1",
+    "name": "Feature Engineering Dataframe Transformer",
+    "keywords": [
+        "feature engineering",
+        "transform"
+    ],
+    "python_path": "d3m.primitives.data_transformation.feature_transform.Brown",
+    "source": {
+        "name": "Brown",
+        "contact": "mailto:wrunnels@mit.edu",
+        "uris": [
+            "https://github.com/wes1350/brown_feature_engineering"
+        ]
+    },
+    "installation": [
+        {
+            "type": "PIP",
+            "package_uri": "git+https://github.com/wes1350/brown_feature_engineering@682b2872ce09d9a6325f8cbb2fc4c8951aa25e25#egg=brown_feature_engineering"
+        }
+    ],
+    "algorithm_types": [
+        "DATA_CONVERSION"
+    ],
+    "primitive_family": "FEATURE_EXTRACTION",
+    "hyperparams_to_tune": [
+        "paths",
+        "operations",
+        "names_to_keep",
+        "opt_outs"
+    ],
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
+    "original_python_path": "feature_engineering.data_transformation.dataframe_transform.DataframeTransform",
+    "primitive_code": {
+        "class_type_arguments": {
+            "Inputs": "d3m.container.pandas.DataFrame",
+            "Outputs": "d3m.container.pandas.DataFrame",
+            "Hyperparams": "feature_engineering.data_transformation.dataframe_transform.Hyperparams",
+            "Params": "NoneType"
+        },
+        "interfaces_version": "2019.11.10",
+        "interfaces": [
+            "transformer.TransformerPrimitiveBase",
+            "base.PrimitiveBase"
+        ],
+        "hyperparams": {
+            "paths": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": null,
+                "structural_type": "typing.Union[NoneType, str]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "List of lists describing the tree structure leading to the desired result in json format."
+            },
+            "operations": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": null,
+                "structural_type": "typing.Union[NoneType, str]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Dict of operation types corresponding to each of the labels given in paths in json format."
+            },
+            "names_to_keep": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": null,
+                "structural_type": "typing.Union[NoneType, str]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Feature names to keep. None signifies keep all."
+            },
+            "opt_outs": {
+                "type": "d3m.metadata.hyperparams.Hyperparameter",
+                "default": null,
+                "structural_type": "typing.Union[NoneType, str]",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
+                ],
+                "description": "Dict of pre-processing steps to skip in json format."
+            }
+        },
+        "arguments": {
+            "hyperparams": {
+                "type": "feature_engineering.data_transformation.dataframe_transform.Hyperparams",
+                "kind": "RUNTIME"
+            },
+            "random_seed": {
+                "type": "int",
+                "kind": "RUNTIME",
+                "default": 0
+            },
+            "docker_containers": {
+                "type": "typing.Union[NoneType, typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "volumes": {
+                "type": "typing.Union[NoneType, typing.Dict[str, str]]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "temporary_directory": {
+                "type": "typing.Union[NoneType, str]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "timeout": {
+                "type": "typing.Union[NoneType, float]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "iterations": {
+                "type": "typing.Union[NoneType, int]",
+                "kind": "RUNTIME",
+                "default": null
+            },
+            "produce_methods": {
+                "type": "typing.Sequence[str]",
+                "kind": "RUNTIME"
+            },
+            "inputs": {
+                "type": "d3m.container.pandas.DataFrame",
+                "kind": "PIPELINE"
+            },
+            "params": {
+                "type": "NoneType",
+                "kind": "RUNTIME"
+            }
+        },
+        "class_methods": {},
+        "instance_methods": {
+            "__init__": {
+                "kind": "OTHER",
+                "arguments": [
+                    "hyperparams",
+                    "random_seed",
+                    "docker_containers",
+                    "volumes",
+                    "temporary_directory"
+                ],
+                "returns": "NoneType",
+                "description": "All primitives should accept all their hyper-parameters in a constructor as one value,\nan instance of type ``Hyperparams``.\n\nProvided random seed should control all randomness used by this primitive.\nPrimitive should behave exactly the same for the same random seed across multiple\ninvocations. You can call `numpy.random.RandomState(random_seed)` to obtain an\ninstance of a random generator using provided seed. If your primitive does not\nuse randomness, consider not exposing this argument in your primitive's constructor\nto signal that.\n\nPrimitives can be wrappers around or use one or more Docker images which they can\nspecify as part of  ``installation`` field in their metadata. Each Docker image listed\nthere has a ``key`` field identifying that image. When primitive is created,\n``docker_containers`` contains a mapping between those keys and connection information\nwhich primitive can use to connect to a running Docker container for a particular Docker\nimage and its exposed ports. Docker containers might be long running and shared between\nmultiple instances of a primitive. If your primitive does not use Docker images,\nconsider not exposing this argument in your primitive's constructor.\n\n**Note**: Support for primitives using Docker containers has been put on hold.\nCurrently it is not expected that any runtime running primitives will run\nDocker containers for a primitive.\n\nPrimitives can also use additional static files which can be added as a dependency\nto ``installation`` metadata. When done so, given volumes are provided to the\nprimitive through ``volumes`` argument to the primitive's constructor as a\ndict mapping volume keys to file and directory paths where downloaded and\nextracted files are available to the primitive. All provided files and directories\nare read-only. If your primitive does not use static files, consider not exposing\nthis argument in your primitive's constructor.\n\nPrimitives can also use the provided temporary directory to store any files for\nthe duration of the current pipeline run phase. Directory is automatically\ncleaned up after the current pipeline run phase finishes. Do not store in this\ndirectory any primitive's state you would like to preserve between \"fit\" and\n\"produce\" phases of pipeline execution. Use ``Params`` for that. The main intent\nof this temporary directory is to store files referenced by any ``Dataset`` object\nyour primitive might create and followup primitives in the pipeline should have\naccess to. When storing files into this directory consider using capabilities\nof Python's `tempfile` module to generate filenames which will not conflict with\nany other files stored there. Use provided temporary directory as ``dir`` argument\nto set it as base directory to generate additional temporary files and directories\nas needed. If your primitive does not use temporary directory, consider not exposing\nthis argument in your primitive's constructor.\n\nNo other arguments to the constructor are allowed (except for private arguments)\nbecause we want instances of primitives to be created without a need for any other\nprior computation.\n\nModule in which a primitive is defined should be kept lightweight and on import not do\nany (pre)computation, data loading, or resource allocation/reservation. Any loading\nand resource allocation/reservation should be done in the constructor. Any (pre)computation\nshould be done lazily when needed once requested through other methods and not in the constructor."
+            },
+            "fit": {
+                "kind": "OTHER",
+                "arguments": [
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[NoneType]",
+                "description": "A noop.\n\nParameters\n----------\ntimeout : float\n    A maximum time this primitive should be fitting during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[None]\n    A ``CallResult`` with ``None`` value."
+            },
+            "fit_multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling ``fit`` and after that multiple produce methods at once.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to both fit the primitive and produce outputs\n    for all produce methods listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do for both fitting and producing\n    outputs of all produce methods.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "get_params": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "NoneType",
+                "description": "A noop.\n\nReturns\n-------\nParams\n    An instance of parameters."
+            },
+            "multi_produce": {
+                "kind": "OTHER",
+                "arguments": [
+                    "produce_methods",
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.MultiCallResult",
+                "description": "A method calling multiple produce methods at once.\n\nWhen a primitive has multiple produce methods it is common that they might compute the\nsame internal results for same inputs but return different representations of those results.\nIf caller is interested in multiple of those representations, calling multiple produce\nmethods might lead to recomputing same internal results multiple times. To address this,\nthis method allows primitive author to implement an optimized version which computes\ninternal results only once for multiple calls of produce methods, but return those different\nrepresentations.\n\nIf any additional method arguments are added to primitive's produce method(s), they have\nto be added to this method as well. This method should accept an union of all arguments\naccepted by primitive's produce method(s) and then use them accordingly when computing\nresults.\n\nThe default implementation of this method just calls all produce methods listed in\n``produce_methods`` in order and is potentially inefficient.\n\nIf primitive should have been fitted before calling this method, but it has not been,\nprimitive should raise a ``PrimitiveNotFittedError`` exception.\n\nParameters\n----------\nproduce_methods : Sequence[str]\n    A list of names of produce methods to call.\ninputs : Inputs\n    The inputs given to all produce methods.\ntimeout : float\n    A maximum time this primitive should take to produce outputs for all produce methods\n    listed in ``produce_methods`` argument, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nMultiCallResult\n    A dict of values for each produce method wrapped inside ``MultiCallResult``."
+            },
+            "produce": {
+                "kind": "PRODUCE",
+                "arguments": [
+                    "inputs",
+                    "timeout",
+                    "iterations"
+                ],
+                "returns": "d3m.primitive_interfaces.base.CallResult[d3m.container.pandas.DataFrame]",
+                "singleton": false,
+                "inputs_across_samples": [],
+                "description": ":param inputs: a pandas dataframe wrapped in a d3m container type\n:param timeout: ignored\n:param iterations: ignored\n:return: transformed dataframe in d3m type\n\nParameters\n----------\ninputs : Inputs\n    The inputs of shape [num_inputs, ...].\ntimeout : float\n    A maximum time this primitive should take to produce outputs during this method call, in seconds.\niterations : int\n    How many of internal iterations should the primitive do.\n\nReturns\n-------\nCallResult[Outputs]\n    The outputs of shape [num_inputs, ...] wrapped inside ``CallResult``."
+            },
+            "set_params": {
+                "kind": "OTHER",
+                "arguments": [
+                    "params"
+                ],
+                "returns": "NoneType",
+                "description": "A noop.\n\nParameters\n----------\nparams : Params\n    An instance of parameters."
+            },
+            "set_training_data": {
+                "kind": "OTHER",
+                "arguments": [],
+                "returns": "NoneType",
+                "description": "A noop.\n\nParameters\n----------"
+            }
+        },
+        "class_attributes": {
+            "logger": "logging.Logger",
+            "metadata": "d3m.metadata.base.PrimitiveMetadata"
+        },
+        "instance_attributes": {
+            "hyperparams": "d3m.metadata.hyperparams.Hyperparams",
+            "random_seed": "int",
+            "docker_containers": "typing.Dict[str, d3m.primitive_interfaces.base.DockerContainer]",
+            "volumes": "typing.Dict[str, str]",
+            "temporary_directory": "typing.Union[NoneType, str]"
+        }
+    },
+    "structural_type": "feature_engineering.data_transformation.dataframe_transform.DataframeTransform",
+    "description": "A primitive which transforms a dataframe by adding or removing columns based on the operations specified. Additional\ncolumns take values based on previous columns, e.g. log of column values, or sum of two different column values.\nColumns can also be removed with certain operations. Preprocessing steps are also included, but can be opted out of.\nThe original data of the input will be re-added in its original form if removed or edited during the operation of\nthe primitive. There is no guarantee on the order of the columns in the returned dataframe.\n\nThe primitive inputs represent a DAG originating from one node and leading to another. The DAG may \"expand\" into\nmultiple paths by using several operations (described below) at non-terminal nodes, but ultimately must converge\nback into a single node. Each node must have an associated operation, which corresponds to some transformation\nfunction.\n\nThe DAG structure is given by the paths variable below, while the operations which correspond to each node are\nspecified in the operations hyperparameter.\n\nExample 1:\n\nWe want to add to our dataframe the columns corresponding to the log of each numerical column.\n\nThe DAG looks like this: 0 (base) -> 1 (log)\n\nExample 2:\n\nWe want to add columns corresponding to log, and also columns corresponding to date splitting\n\n                                                                           -> 1 (log)\nThe DAG could look like this (nodes 1 and 2 are interchangeable): 0 (base)                   -> 3 (union)\n                                                                           -> 2 (date_split)\ni.e., paths to the terminal node (3) include 0 -> 1 -> 3 and 0 -> 2 -> 3.\nHere, union just performs the union of the two dataframes generated (log result, and date_split result)\n\nNote that the following would produce the same result:\n\n0 (base) -> 1 (log) -> 2 (date_split)\n\nAs log only acts on numeric columns and date_split only on datetime columns, the result of the log call is not\ninfluenced by the date_split operation. Hence union is actually unnecessary here.\n\nExample 3:\n\nWe want to add columns corresponding to log of each numeric column, sqrt of each numeric column, and the sqrt of the\nlog of each numeric column. Then, we only want to keep a specific subset of the generated columns.\n\nIn this case, the DAG would look like this: 0 (base) -> 1 (sqrt) -> 2 (log)\n\nLet the set of original numeric columns be C. Then at node 1, we will have generated a dataframe with columns C and\nsqrt(C), where sqrt C is a set of columns containing exactly all columns of C after a sqrt operation. In other words,\nthe size of the numeric portion of the base dataframe has doubled in column dimension.\n\nAfter step 2, we will have generated the sqrt of each column in Union(C, sqrt C), as in step 1 we just added sqrt C\nto the original C dataframe. So, the dataframe will now be Union(C, sqrt C, log C, log sqrt C), and the dataframe\nwill have quadrupled in size in column space.\n\n\n\nAll hyperparameters described below are to be given in json format.\n\n\npaths: A list of lists describing paths from the base dataframe to the final result. All paths must start with the\nfirst node (0) and end with the final node, whatever it may be. All nodes specified in each path must have\ncorresponding operations specified in the operations argument.\n-- Example: [[0, 1, 2, 5, 6], [0, 1, 3, 5, 6], [0, 4, 6]]\n-- Example: [[0, 1]] (simplest, will just do one transformation step)\n\noperations: A dict mapping nodes of the DAG to operation codes. The initial node operation is not specified (or can\n            be specified with the dummy operation \"INIT\")\n-- Example: {1: \"log\", 2: \"sum\"} or {0: \"INIT\", 1: \"log\", 2: \"sum\"}\n\nnames_to_keep: A list of strings corresponding to columns to retain after creation. Useful if we don't want to\nkeep all generated columns. The default value of None retains all generated columns.\n\nopt_outs: A list of preprocessing steps to opt out of. Default is to opt out of none.\n\n-- Options: \"skip_all\": skip all preprocessing steps\n            \"skip_drop_index\": drop the column \"d3mIndex\" if it exists\n            \"skip_infer_dates\": don't try to produce datetime columns from names containing \"date\" or \"Date\"\n            \"skip_remove_full_NA_columns\": don't remove columns whose values are all NA\n            \"skip_fill_in_categorical_NAs\": don't replace NA values with the value \"__missing__\" in categorical cols\n            \"skip_impute_with_median\": don't impute NA values with the median in numeric columns\n            \"skip_one_hot_encode\": don't one hot encode categorical columns\n            \"skip_remove_high_cardinality_cat_vars\": don't remove categorical columns with mostly unique values\n            \"skip_rename_for_xgb\": don't rename columns to comply with XGBoost requirements\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "digest": "e724d1aee0a330bda616206fa86911f702315b0fa216236abf4c222f6f7be8d3"
+}
