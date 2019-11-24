@@ -55,7 +55,7 @@ step_5.add_hyperparameter(name='operations', argument_type=ArgumentType.VALUE, d
 pipeline_description.add_step(step_5)
 
 # Step 7: random_forest
-step_6 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.regression.random_forest.SKlearn'))
+step_6 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.classification.random_forest.SKlearn'))
 step_6.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='steps.5.produce')
 step_6.add_argument(name='outputs', argument_type=ArgumentType.CONTAINER, data_reference=targets)
 step_6.add_output('produce')
