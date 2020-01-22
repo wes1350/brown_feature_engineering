@@ -12,19 +12,34 @@ class DateSplitOperation(Operation):
         return True
 
     @staticmethod
-    def transform(df):
+    def transform(df, specified_cols=None, concatenate_originals=True):
+        """
+        Take a dataframe with datetime columns and add numeric features that extract info from them
+        :param df: dataframe to transform
+        :param specified_cols: list of certain features to create, e.g. ["year", "month", "day"]
+                               if None, create all choices by default
+        :return: transformed dataframe
+        """
         date_col_names = df.select_dtypes(include=['datetime']).columns.tolist()  # all dates
 
         new_date_feature_name_pairs = []
-        date_feature_suffixes = ["year", "month", "day", "hour", "minute", "second", "microsecond",
-                                 "nanosecond", "dayofweek"]
+        if specified_cols is None:
+            date_feature_suffixes = ["year", "month", "day", "hour", "minute", "second", "microsecond",
+                                     "nanosecond", "dayofweek"]
+        else:
+            if isinstance(specified_cols, str):
+                date_feature_suffixes = [specified_cols]
+            else:
+                date_feature_suffixes = specified_cols
+
         original_col_set = set(df.columns)
 
         # Find new date component columns that are not duplicates
         for i in range(len(date_col_names)):
             for j in range(len(date_feature_suffixes)):
                 new_name_pair = (date_col_names[i], date_feature_suffixes[j])
-                if new_name_pair[0] + "_" + new_name_pair[1] not in original_col_set:
+                new_name = "date_split_" + new_name_pair[1] + "(" + new_name_pair[0] + ")"
+                if new_name not in original_col_set:
                     new_date_feature_name_pairs.append(new_name_pair)
 
         new_values = np.zeros((df.shape[0], len(new_date_feature_name_pairs)))
@@ -54,5 +69,9 @@ class DateSplitOperation(Operation):
 
             new_values[:, i] = current_component
 
-        return pd.concat([df, pd.DataFrame(new_values, columns=[p[0] + "_" + p[1] for p in new_date_feature_name_pairs],
-                                           index=df.index)], axis=1)
+        if concatenate_originals:
+            return pd.concat([df, pd.DataFrame(new_values, columns=["date_split_" + p[1] + "(" + p[0] + ")" for
+                                                   p in new_date_feature_name_pairs], index=df.index)], axis=1)
+        else:
+            return pd.DataFrame(new_values, columns=["date_split_" + p[1] + "(" + p[0] + ")" for
+                                                   p in new_date_feature_name_pairs], index=df.index)

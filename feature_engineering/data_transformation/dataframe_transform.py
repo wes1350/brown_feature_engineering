@@ -1,17 +1,15 @@
 import typing
 import json
 import os
-from collections import OrderedDict
 
 from d3m import container
 from d3m.metadata import base as metadata_base, hyperparams
 from d3m.primitive_interfaces import base, featurization
 from d3m import utils
 
-from .operations import UnionOperation, FeatureSelectionOperation, SpatialAggregationOperation, OneArgOperation, \
-    TwoArgOperation, AggregateOperation, CompactOneHotOperation, DateSplitOperation, FrequencyOperation, \
+from .operations import OneArgOperation, TwoArgOperation, AggregateOperation, DateSplitOperation, FrequencyOperation,\
     StatisticalOperation, InitializationOperation
-from . import Transformer
+import pandas as pd
 
 __all__ = ('DataframeTransformPrimitive',)
 
@@ -20,112 +18,23 @@ Outputs = container.DataFrame
 
 
 class Hyperparams(hyperparams.Hyperparams):
-    paths = hyperparams.Hyperparameter[typing.Union[str, None]](
+    features = hyperparams.Hyperparameter[typing.Union[str, None]](
         default=None,
         semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
-        description='List of lists describing the tree structure leading to the desired result in json format.'
-    )
-    operations = hyperparams.Hyperparameter[typing.Union[str, None]](
-        default=None,
-        semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
-        description='Dict of operation types corresponding to each of the labels given in paths in json format.'
-    )
-    names_to_keep = hyperparams.Hyperparameter[typing.Union[str, None]](
-        default=None,
-        semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
-        description='Feature names to keep. None signifies keep all.'
-    )
-    opt_outs = hyperparams.Hyperparameter[typing.Union[str, None]](
-        default=None,
-        semantic_types=['https://metadata.datadrivendiscovery.org/types/ControlParameter'],
-        description='Dict of pre-processing steps to skip in json format.'
+        description='Feature names to generate.'
     )
 
 
 class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     """
-    A primitive which transforms a dataframe by adding or removing columns based on the operations specified. Additional
-    columns take values based on previous columns, e.g. log of column values, or sum of two different column values.
-    Columns can also be removed with certain operations. Preprocessing steps are also included, but can be opted out of.
-    The original data of the input will be re-added in its original form if removed or edited during the operation of
-    the primitive. There is no guarantee on the order of the columns in the returned dataframe.
-
-    The primitive inputs represent a DAG originating from one node and leading to another. The DAG may "expand" into
-    multiple paths by using several operations (described below) at non-terminal nodes, but ultimately must converge
-    back into a single node. Each node must have an associated operation, which corresponds to some transformation
-    function.
-
-    The DAG structure is given by the paths variable below, while the operations which correspond to each node are
-    specified in the operations hyperparameter.
-
-    Example 1:
-
-    We want to add to our dataframe the columns corresponding to the log of each numerical column.
-
-    The DAG looks like this: 0 (base) -> 1 (log)
-
-    Example 2:
-
-    We want to add columns corresponding to log, and also columns corresponding to date splitting
-
-                                                                               -> 1 (log)
-    The DAG could look like this (nodes 1 and 2 are interchangeable): 0 (base)                   -> 3 (union)
-                                                                               -> 2 (date_split)
-    i.e., paths to the terminal node (3) include 0 -> 1 -> 3 and 0 -> 2 -> 3.
-    Here, union just performs the union of the two dataframes generated (log result, and date_split result)
-
-    Note that the following would produce the same result:
-
-    0 (base) -> 1 (log) -> 2 (date_split)
-
-    As log only acts on numeric columns and date_split only on datetime columns, the result of the log call is not
-    influenced by the date_split operation. Hence union is actually unnecessary here.
-
-    Example 3:
-
-    We want to add columns corresponding to log of each numeric column, sqrt of each numeric column, and the sqrt of the
-    log of each numeric column. Then, we only want to keep a specific subset of the generated columns.
-
-    In this case, the DAG would look like this: 0 (base) -> 1 (sqrt) -> 2 (log)
-
-    Let the set of original numeric columns be C. Then at node 1, we will have generated a dataframe with columns C and
-    sqrt(C), where sqrt C is a set of columns containing exactly all columns of C after a sqrt operation. In other words,
-    the size of the numeric portion of the base dataframe has doubled in column dimension.
-
-    After step 2, we will have generated the sqrt of each column in Union(C, sqrt C), as in step 1 we just added sqrt C
-    to the original C dataframe. So, the dataframe will now be Union(C, sqrt C, log C, log sqrt C), and the dataframe
-    will have quadrupled in size in column space.
+    A primitive which transforms a dataframe by adding or removing columns based on the columns initally present in the
+    dataframe, e.g. log of column values, or sum of two different column values.
 
 
+    features: A list of strings or json array corresponding to columns new columns to generate. Note that all
+    original columns will be included in the returned dataframe, even if they are not included here.
 
-    All hyperparameters described below are to be given in json format.
-
-
-    paths: A list of lists describing paths from the base dataframe to the final result. All paths must start with the
-    first node (0) and end with the final node, whatever it may be. All nodes specified in each path must have
-    corresponding operations specified in the operations argument.
-    -- Example: [[0, 1, 2, 5, 6], [0, 1, 3, 5, 6], [0, 4, 6]]
-    -- Example: [[0, 1]] (simplest, will just do one transformation step)
-
-    operations: A dict mapping nodes of the DAG to operation codes. The initial node operation is not specified (or can
-                be specified with the dummy operation "INIT")
-    -- Example: {1: "log", 2: "sum"} or {0: "INIT", 1: "log", 2: "sum"}
-
-    names_to_keep: A list of strings corresponding to columns to retain after creation. Useful if we don't want to
-    keep all generated columns. The default value of None retains all generated columns. Note that all original columns
-    are re-added at the end of the primitive operation, so there is no need to specify them directly.
-
-    opt_outs: A list of preprocessing steps to opt out of. Default is to opt out of none.
-
-    -- Options: "skip_all": skip all preprocessing steps
-                "skip_drop_index": drop the column "d3mIndex" if it exists
-                "skip_infer_dates": don't try to produce datetime columns from names containing "date" or "Date"
-                "skip_remove_full_NA_columns": don't remove columns whose values are all NA
-                "skip_fill_in_categorical_NAs": don't replace NA values with the value "__missing__" in categorical cols
-                "skip_impute_with_median": don't impute NA values with the median in numeric columns
-                "skip_one_hot_encode": don't one hot encode categorical columns
-                "skip_remove_high_cardinality_cat_vars": don't remove categorical columns with mostly unique values
-                "skip_rename_for_xgb": don't rename columns to comply with XGBoost requirements
+    Returns a dataframe containing the columns in the original dataframe, plus new columns for each feature name given.
     """
 
     _TAG_NAME = "{git_commit}".format(git_commit=utils.current_git_commit(os.path.dirname(__file__)), )
@@ -140,7 +49,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     metadata = metadata_base.PrimitiveMetadata(
         {
             'id': '99951ce7-193a-408d-96f0-87164b9a2b26',
-            'version': '0.1.1',
+            'version': '0.2.1',
             'name': "Feature Engineering Dataframe Transformer",
             'keywords': ['feature engineering', 'transform'],
             'python_path': 'd3m.primitives.data_transformation.feature_transform.Brown',
@@ -158,7 +67,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             }],
             'algorithm_types': ["DATA_CONVERSION"],
             'primitive_family': "FEATURE_EXTRACTION",
-            'hyperparams_to_tune': ["paths", "operations", "names_to_keep", "opt_outs"]
+            'hyperparams_to_tune': ["features"]
         }
     )
 
@@ -169,232 +78,159 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
         :param iterations: ignored
         :return: transformed dataframe in d3m type
         """
-        # Translate json preprocessing opt outs
-        if "opt_outs" not in self.hyperparams or self.hyperparams["opt_outs"] is None:
-            translated_opt_outs = None
-        else:
-            translated_opt_outs = json.loads(self.hyperparams["opt_outs"])
 
-        # Not enough info, just return original data
-        if "paths" not in self.hyperparams or "operations" not in self.hyperparams:
-            return inputs
-        if self.hyperparams["paths"] is None or self.hyperparams["operations"] is None:
-            return inputs
+        df = inputs
 
-        # Translate rest of json inputs
+        op_mapping = {"INIT": InitializationOperation.InitializationOperation(),
+                      "max_agg": AggregateOperation.MaxOperation(),
+                      "min_agg": AggregateOperation.MinOperation(),
+                      "mean_agg": AggregateOperation.MeanOperation(),
+                      "count_agg": AggregateOperation.CountOperation(),
+                      "std_agg": AggregateOperation.StdOperation(),
+                      "zscore_agg": AggregateOperation.ZScoreOperation(),
+                      "date_split": DateSplitOperation.DateSplitOperation(),
+                      "log": OneArgOperation.LogOperation(),
+                      "sin": OneArgOperation.SinOperation(),
+                      "cos": OneArgOperation.CosOperation(),
+                      "tanh": OneArgOperation.TanhOperation(),
+                      "rc": OneArgOperation.ReciprocalOperation(),
+                      "square": OneArgOperation.SquareOperation(),
+                      "sqrt": OneArgOperation.SqrtOperation(),
+                      "sigmoid": OneArgOperation.SigmoidOperation(),
+                      "sum": TwoArgOperation.SumOperation(),
+                      "subtract": TwoArgOperation.SubtractOperation(),
+                      "multiply": TwoArgOperation.MultiplyOperation(),
+                      "divide": TwoArgOperation.DivideOperation(),
+                      "zscore": StatisticalOperation.ZScoreOperation(),
+                      "min_max_norm": StatisticalOperation.MinMaxNormOperation(),
+                      "binning_u": StatisticalOperation.BinningUOperation(),
+                      "binning_d": StatisticalOperation.BinningDOperation(),
+                      "one_term_frequency": FrequencyOperation.OneTermFrequencyOperation()}
 
-        translated_paths = json.loads(self.hyperparams["paths"])
-        translated_op_dict = json.loads(self.hyperparams["operations"])
-        if "names_to_keep" not in self.hyperparams or self.hyperparams["names_to_keep"] is None:
-            translated_names = None
-        else:
-            translated_names = json.loads(self.hyperparams["names_to_keep"])
+        def generate_feature_from_name(feature, new_index):
+            """Given a name to engineer, return a new feature corresponding to that name."""
 
-        # reconstruct ops used to create for applyBulkTransform
-        reconstructed_op_dict = {}
-        for label in translated_op_dict:
-            if translated_op_dict[label] == "INIT":
-                reconstructed_op_dict[int(label)] = InitializationOperation.InitializationOperation()
-            elif translated_op_dict[label] == "max":
-                reconstructed_op_dict[int(label)] = AggregateOperation.MaxOperation()
-            elif translated_op_dict[label] == "min":
-                reconstructed_op_dict[int(label)] = AggregateOperation.MinOperation()
-            elif translated_op_dict[label] == "mean":
-                reconstructed_op_dict[int(label)] = AggregateOperation.MeanOperation()
-            elif translated_op_dict[label] == "count":
-                reconstructed_op_dict[int(label)] = AggregateOperation.CountOperation()
-            elif translated_op_dict[label] == "std":
-                reconstructed_op_dict[int(label)] = AggregateOperation.StdOperation()
-            elif translated_op_dict[label] == "z_agg":
-                reconstructed_op_dict[int(label)] = AggregateOperation.ZAggOperation()
-            elif translated_op_dict[label] == "date_split":
-                reconstructed_op_dict[int(label)] = DateSplitOperation.DateSplitOperation()
-            elif translated_op_dict[label] == "feature_selection":
-                reconstructed_op_dict[int(label)] = FeatureSelectionOperation.FeatureSelectionOperation()
-            elif translated_op_dict[label] == "log":
-                reconstructed_op_dict[int(label)] = OneArgOperation.LogOperation()
-            elif translated_op_dict[label] == "sin":
-                reconstructed_op_dict[int(label)] = OneArgOperation.SinOperation()
-            elif translated_op_dict[label] == "cos":
-                reconstructed_op_dict[int(label)] = OneArgOperation.CosOperation()
-            elif translated_op_dict[label] == "tanh":
-                reconstructed_op_dict[int(label)] = OneArgOperation.TanhOperation()
-            elif translated_op_dict[label] == "rc":
-                reconstructed_op_dict[int(label)] = OneArgOperation.ReciprocalOperation()
-            elif translated_op_dict[label] == "square":
-                reconstructed_op_dict[int(label)] = OneArgOperation.SquareOperation()
-            elif translated_op_dict[label] == "sqrt":
-                reconstructed_op_dict[int(label)] = OneArgOperation.SqrtOperation()
-            elif translated_op_dict[label] == "sigmoid":
-                reconstructed_op_dict[int(label)] = OneArgOperation.SigmoidOperation()
-            elif translated_op_dict[label] == "sum":
-                reconstructed_op_dict[int(label)] = TwoArgOperation.SumOperation()
-            elif translated_op_dict[label] == "subtract":
-                reconstructed_op_dict[int(label)] = TwoArgOperation.SubtractOperation()
-            elif translated_op_dict[label] == "multiply":
-                reconstructed_op_dict[int(label)] = TwoArgOperation.MultiplyOperation()
-            elif translated_op_dict[label] == "divide":
-                reconstructed_op_dict[int(label)] = TwoArgOperation.DivideOperation()
-            elif translated_op_dict[label] == "zscore":
-                reconstructed_op_dict[int(label)] = StatisticalOperation.ZScoreOperation()
-            elif translated_op_dict[label] == "min_max_norm":
-                reconstructed_op_dict[int(label)] = StatisticalOperation.MinMaxNormOperation()
-            elif translated_op_dict[label] == "binning_u":
-                reconstructed_op_dict[int(label)] = StatisticalOperation.BinningUOperation()
-            elif translated_op_dict[label] == "binning_d":
-                reconstructed_op_dict[int(label)] = StatisticalOperation.BinningDOperation()
-            elif translated_op_dict[label] == "union":
-                reconstructed_op_dict[int(label)] = UnionOperation.UnionOperation()
-            # elif translated_op_dict[label] == "spatial_min":
-            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMinOperation()
-            # elif translated_op_dict[label] == "spatial_max":
-            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMaxOperation()
-            # elif translated_op_dict[label] == "spatial_mean":
-            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialMeanOperation()
-            # elif translated_op_dict[label] == "spatial_count":
-            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialCountOperation()
-            # elif translated_op_dict[label] == "spatial_std":
-            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialStdOperation()
-            # elif translated_op_dict[label] == "spatial_z_agg":
-            #     reconstructed_op_dict[int(label)] = SpatialAggregationOperation.SpatialZAggOperation()
-            elif translated_op_dict[label] == "one_term_frequency":
-                reconstructed_op_dict[int(label)] = FrequencyOperation.OneTermFrequencyOperation()
-            # elif translated_op_dict[label] == "two_term_frequency":
-            #     reconstructed_op_dict[int(label)] = FrequencyOperation.TwoTermFrequencyOperation()
-            # elif translated_op_dict[label] == "compact_one_hot":
-            #     reconstructed_op_dict[int(label)] = CompactOneHotOperation.CompactOneHotOperation()
-            else:
-                raise ValueError("Could not identify an operation with given name: " + translated_op_dict[label])
+            def parse_feature_name(feature_name):
 
-        # Now check to make sure paths is valid, remove the final node from the path, and note which node to construct
-        final_node_list = []
-        for path in translated_paths:
-            final_node_list.append(path.pop(-1))
-        if len(final_node_list) > 1:
-            for node in final_node_list[1:]:
-                if node != final_node_list[0]:
-                    raise ValueError("Some of the given paths terminate with different nodes")
-        desired_node = final_node_list[0]
+                def takes_two_args(op_str):
+                    """Return True if the operation corresponding to the input takes two arguments."""
+                    return op_mapping[op_str].isAgg() or op_mapping[op_str].isTwoArg()
 
-        # Make sure all paths begin from the same node
-        if len(translated_paths) > 0:
-            initial_node = translated_paths[0][0]
-            for path in translated_paths:
-                if path[0] != initial_node:
-                    raise ValueError("Some paths have different starting nodes")
+                def get_two_features_from_str(s):
+                    """
+                    For a given input string supposed to contain the names of two features, return them.
+                    We do this by counting where parentheses balance in the input string.
 
-        # If initial node does not have the INIT operation mapped to it, add it automatically.
-        # If it is already specified with the INIT operation, keep it
-        if len(translated_paths) > 0:
-            initial_node = translated_paths[0][0]
-            if initial_node not in reconstructed_op_dict:
-                reconstructed_op_dict[initial_node] = InitializationOperation.InitializationOperation()
-            else:
-                # If it is already specified with a different operation, raise Exception
-                if translated_op_dict[str(initial_node)] != "INIT":
-                    raise ValueError("Initial node specified with non-initialization operation. Nodes are specified "
-                                     "with the operations that yield them from their parents, and the root node has no "
-                                     "parent.")
+                    e.g. "log(log(a))" -> "log(a)" only balances at end, so it only contains one feature
+                         "sum(a, log(b))" -> "a, log(b)" has a ", " first, so it splits into two features
+                         "sum(log(a), sin(b))" -> "log(a), sin(b)" balances out after log, so log(a) is one of the features
+                         "sum(sum(log(a), sin(b)))" -> "sum(log(a), sin(b))" balances at the end, so it only contains one
+                         "sum(cos(log(a)), sin(b))" -> "cos(log(a)), sin(b)" balances after cos(log), so it contains two
+                    """
+                    parenthesis_ct = 0
+                    for i in range(len(s)):
+                        if parenthesis_ct < 0:
+                            raise Exception("Could not parse name due to invalid parenthesis structure!")
+                        if parenthesis_ct == 0:
+                            # Check to make sure at least 3 characters remain and the next 2 are ", "
+                            if i < len(s) - 2 and s[i:i + 2] == ", ":
+                                return s[:i], s[i + 2:]
+                        if s[i] == "(":
+                            parenthesis_ct += 1
+                        elif s[i] == ")":
+                            parenthesis_ct -= 1
+                    # If we never returned, there must be an error in the feature name
+                    raise ValueError("Could not parse name for two features: " + s)
 
-        if desired_node not in reconstructed_op_dict:
-            raise ValueError("Node to be constructed not found in given operation dictionary")
-        for path in translated_paths:
-            for node in path:
-                if node not in reconstructed_op_dict:
-                    raise ValueError("Cannot find node " + str(node) + " in given operation dictionary")
-
-        # Preprocess inputs
-        root_features = Transformer.preprocess(data_input=inputs, opt_outs=translated_opt_outs)
-
-        # Now check to see if the current node has one or two parents
-        first_parent = None
-        second_parent = None
-        for path in translated_paths:
-            if first_parent is None:
-                first_parent = path[-1]
-            elif path[-1] != first_parent:
-                if second_parent is not None:
-                    if path[-1] != second_parent:
-                        raise ValueError("Paths indicate desired node has more than 2 parents!")
+                # If no parentheses, then this is not an engineered feature
+                if "(" not in feature_name or ")" not in feature_name:
+                    return {"op_name": "INIT", "feature_names": [feature_name], "additional_info": None}
                 else:
-                    second_parent = path[-1]
+                    for op_name in op_mapping:
+                        # Check to see if the feature name begins with the op name
+                        if feature_name[:len(op_name)] == op_name:
+                            opless_name = feature_name[len(op_name):]
+                            if op_name == "date_split":
+                                if "(" not in opless_name or opless_name[0] != "_":
+                                    raise Exception("Could not parse date split feature name: " + feature_name)
+                                date_feature_type = opless_name.split("(")[0][
+                                                    1:]  # try to extract "year", "day", etc.
+                                # e.g. return ("date_split", "year", "feature_a") from "date_split_year(feature_a)"
+                                return {"op_name": op_name,
+                                        "feature_names": [opless_name[1 + len(date_feature_type) + 1:-1]],
+                                        "additional_info": date_feature_type}
+                            else:
+                                # Make sure that parentheses enclose the other arguments
+                                if len(opless_name) > 2 and opless_name[0] == "(" and opless_name[-1] == ")":
+                                    trimmed_str = opless_name[1:-1]  # Get rid of parentheses too
+                                    # If it takes two arguments, parse them
+                                    if takes_two_args(op_name):
+                                        arguments = get_two_features_from_str(trimmed_str)
+                                        if arguments[0] == arguments[1]:
+                                            raise ValueError("Cannot duplicate argument for operation taking two arguments:"
+                                                             " {name}".format(name=feature_name))
+                                        return {"op_name": op_name, "feature_names": [arguments[0], arguments[1]],
+                                                "additional_info": None}
+                                    else:  # If it only takes one argument, the trimmed name will be the feature name
+                                        return {"op_name": op_name, "feature_names": [trimmed_str],
+                                                "additional_info": None}
+                                else:
+                                    raise ValueError(
+                                        "Could not parse name due to lack of parentheses or invalid feature name: " + feature_name)
+                # If we reach here, did not find an adequate condition for parsing, so assume input is an original feature.
+                return {"op_name": "INIT", "feature_names": [feature_name], "additional_info": None}
 
-        if second_parent is None:
-            # Make sure if our node is a union, we have at least 2 paths
-            if translated_op_dict[str(desired_node)] == "union":
-                raise ValueError("If specifying just one path, cannot specify Union operation for the desired node")
-            reconstructed = Transformer.applyBulkTransform(root_features, reconstructed_op_dict[desired_node],
-                                                           nodeOpDict=reconstructed_op_dict,
-                                                           firstPathsFromRoot=translated_paths,
-                                                           skip_fs_for_reconstruction=True)
-        else:
-            first_paths = []
-            second_paths = []
-            for path in translated_paths:
-                if path[-1] == first_parent:
-                    first_paths.append(path)
-                else:
-                    second_paths.append(path)
+            feature_info_dict = parse_feature_name(feature)
+            op_name = feature_info_dict["op_name"]
+            args = feature_info_dict["feature_names"]
+            if op_name == "INIT":
+                return None
+            elif op_mapping[op_name].opType in ["one_arg", "statistical", "frequency"]:
+                values = df[args[0]].values if args[0] in df.columns else \
+                generate_feature_from_name(args[0], new_index=new_index)[args[0]]
+                return op_mapping[op_name].transform(pd.DataFrame({args[0]: values}, index=new_index),
+                                                     concatenate_originals=False)
+            elif op_mapping[op_name].opType == "aggregate":
+                values_0 = df[args[0]].values if args[0] in df.columns else \
+                generate_feature_from_name(args[0], new_index=new_index)[args[0]]
+                values_1 = df[args[1]].values if args[1] in df.columns else \
+                generate_feature_from_name(args[1], new_index=new_index)[args[1]]
+                one_hot_df = pd.get_dummies(pd.DataFrame({args[0]: values_0, args[1]: values_1}, index=new_index),
+                                            prefix_sep="__dummy__")
+                return op_mapping[op_name].transform(one_hot_df, concatenate_originals=False)
+            elif op_mapping[op_name].opType == "two_arg":
+                values_0 = df[args[0]].values if args[0] in df.columns else \
+                generate_feature_from_name(args[0], new_index=new_index)[args[0]]
+                values_1 = df[args[1]].values if args[1] in df.columns else \
+                generate_feature_from_name(args[1], new_index=new_index)[args[1]]
+                return op_mapping[op_name].transform(
+                    pd.DataFrame({args[0]: values_0, args[1]: values_1}, index=new_index),
+                    correlation_threshold=2,  # threshold must be > 1 to ensure no removal
+                    concatenate_originals=False)
+            elif op_mapping[op_name].opType == "date":
+                values = df[args[0]].values if args[0] in df.columns else \
+                generate_feature_from_name(args[0], new_index=new_index)[args[0]]
+                return op_mapping[op_name].transform(pd.DataFrame({args[0]: pd.to_datetime(values)}, index=new_index),
+                                                     specified_cols=feature_info_dict["additional_info"],
+                                                     concatenate_originals=False)
+            else:
+                raise Exception("Invalid operation: " + op_name)
 
-            reconstructed = Transformer.applyBulkTransform(root_features, reconstructed_op_dict[desired_node],
-                                                           nodeOpDict=reconstructed_op_dict,
-                                                           firstPathsFromRoot=first_paths,
-                                                           secondPathsFromRoot=second_paths,
-                                                           skip_fs_for_reconstruction=True)
+        df_copy = df.copy()
+        names = self.hyperparams["features"]
+        if type(names) == "str":
+            names = json.loads(names)
 
-        # If categorical variable values unseen in the previous run are now present, keep them
-        # Also make sure we don't remove categorical variables
-        full_cols = reconstructed.columns.tolist()
-        dummy_cols = [name for name in full_cols if "__dummy__" in name]
+        for name in names:
+            if name in df_copy.columns:
+                continue
+            generated_feature = generate_feature_from_name(name, new_index=df.index)
+            if generated_feature is None:
+                pass
+            else:
+                df_copy[name] = generated_feature[name]
 
-        # Remove excess features since we didn't do feature selection in reconstruction
-        # However, if the given set of names is None, assume we keep all given features
-        if translated_names is not None:
-            # Also we might not have some categorical variable values we had before in the new data. In this case,
-            # to prevent errors we remove those from the list of translated names, as they don't exist in this new data
-
-            names_to_remove = [name for name in translated_names if "__dummy__" in name and name not in dummy_cols]
-            valid_names = [name for name in translated_names + dummy_cols if name not in names_to_remove]
-
-            # Remove duplicate columns too; not sure if that will affect things yet
-            try:
-                # reconstructed = reconstructed[list(set(valid_names + dummy_cols))]
-                # combined_names = valid_names
-                # for name in dummy_cols:
-                #     if name not in combined_names:
-                #         combined_names.append(name)
-                # reconstructed = reconstructed[combined_names]
-                reconstructed = reconstructed[list(OrderedDict.fromkeys(list(valid_names + dummy_cols)))]
-
-                # Also remove any date time features we created
-                reconstructed = reconstructed.select_dtypes(exclude="datetime")
-            except:
-                print(translated_names)
-                print(reconstructed.columns)
-                assert False
-
-        # Remove dummy columns
-        results = Transformer.recompress_categorical_features(reconstructed)
-
-        # Sometimes during preprocessing we rename certain columns because XGB can't handle '[', ']', or '<' in names.
-        # So we switch the names of these columns back to the original names now that feature engineering is done.
-        for name in results.columns:
-            if "__lb__" in name or "__rb__" in name or "__lt__" in name:
-                results[name.replace("__lb__", "[").replace("__rb__", "]").replace("__lt__", "<")] = results[name]
-                results.drop(columns=[name])
-
-        # Finally, make sure we keep all the old columns. Replace preprocessed old columns with the originals, and add them
-        # back if we removed them
-        for col in inputs.columns:
-            results[col] = inputs[col]
-
-        # If d3mIndex column is included, move back to front
-        cols = list(results.columns)
-        if 'd3mIndex' in cols:
-            cols.insert(0, cols.pop(cols.index('d3mIndex')))
-            results = results.ix[:, cols]
-
-        outputs = container.DataFrame(results)
+        outputs = container.DataFrame(df.copy)
 
         outputs.metadata = inputs.metadata.generate(value=outputs)
 

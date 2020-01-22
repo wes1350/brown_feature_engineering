@@ -95,21 +95,21 @@ def statisticalOperationWrapper(op_name, a):
 def aggregateOperationWrapper(op_name, a):
     if len(a) == 0:
         raise Exception("Cannot compute aggregate operation of empty list of numeric attributes!")
-    if op_name == "min" or op_name == "spatial_min":
+    if op_name == "min_agg" or op_name == "spatial_min":
         return np.amin(a)
-    elif op_name == "max" or op_name == "spatial_max":
+    elif op_name == "max_agg" or op_name == "spatial_max":
         return np.amax(a)
-    elif op_name == "count" or op_name == "spatial_count":
+    elif op_name == "count_agg" or op_name == "spatial_count":
         return len(a)
-    elif op_name == "mean" or op_name == "spatial_mean":
+    elif op_name == "mean_agg" or op_name == "spatial_mean":
         return np.mean(a)
-    elif op_name == "std" or op_name == "spatial_std":
+    elif op_name == "std_agg" or op_name == "spatial_std":
         a_min = np.amin(a)
         a_max = np.amax(a)
         if a_min == a_max or len(a) == 1:
             return 0
         return np.std(a)
-    elif op_name == "z_agg" or op_name == "spatial_z_agg":
+    elif op_name == "zscore_agg" or op_name == "spatial_zscore":
         a_min = np.amin(a)
         a_max = np.amax(a)
         if a_min == a_max or len(a) == 1:

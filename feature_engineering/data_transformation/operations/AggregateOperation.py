@@ -12,7 +12,7 @@ class AggregateOperation(Operation):
     def is_redundant_to_self(self):
         return True
 
-    def transform(self, df, new_feature_cache=None):
+    def transform(self, df, new_feature_cache=None, concatenate_originals=True):
         numeric_col_names = df.select_dtypes(include=['number']).columns.tolist()  # all numeric cols, including dummies
         categorical_dummy_cols = [col for col in df.columns.values.tolist() if "__dummy__" in col]  # just dummies
         if len(categorical_dummy_cols) != 0:  # Can happen if we feature select all the categorical variables out.
@@ -33,14 +33,13 @@ class AggregateOperation(Operation):
                 n_col_loc = df.columns.get_loc(nCol)
                 for cCol in categorical_dummy_cols:
                     cat_prefix = cCol.split("__dummy__")[0]
-                    new_name = self.getOperation() + "_agg" + "(" + nCol + ", " + cat_prefix + ")"
+                    new_name = self.getOperation() + "(" + nCol + ", " + cat_prefix + ")"
 
                     if new_name not in set(df.columns):
                         if new_feature_cache is not None:
                             if new_name in new_feature_cache:
                                 if new_name not in cat_var_to_agg_values:
                                     cat_var_to_agg_values[new_name] = new_feature_cache[new_name]
-                                    # print("USING CACHE FOR: ", new_name)
                                 continue  # Don't recalculate if found in cache
 
                         if new_name not in cat_var_to_agg_values:
@@ -63,39 +62,42 @@ class AggregateOperation(Operation):
                     if new_cols[i] not in new_feature_cache:
                         new_feature_cache[new_cols[i]] = new_values[:, i]
 
-            return pd.concat([df, pd.DataFrame(new_values, columns=new_cols, index=df.index)], axis=1)
+            if concatenate_originals:
+                return pd.concat([df, pd.DataFrame(new_values, columns=new_cols, index=df.index)], axis=1)
+            else:
+                return pd.DataFrame(new_values, columns=new_cols, index=df.index)
         else:
             return df
 
 class MinOperation(AggregateOperation):
     def __init__(self):
         super().__init__()
-        self.operation = "min"
+        self.operation = "min_agg"
 
 class MaxOperation(AggregateOperation):
     def __init__(self):
         super().__init__()
-        self.operation = "max"
+        self.operation = "max_agg"
 
 class MeanOperation(AggregateOperation):
     def __init__(self):
         super().__init__()
-        self.operation = "mean"
+        self.operation = "mean_agg"
 
 class CountOperation(AggregateOperation):
     def __init__(self):
         super().__init__()
-        self.operation = "count"
+        self.operation = "count_agg"
 
 class StdOperation(AggregateOperation):
     def __init__(self):
         super().__init__()
-        self.operation = "std"
+        self.operation = "std_agg"
 
-class ZAggOperation(AggregateOperation):
+class ZScoreOperation(AggregateOperation):
     def __init__(self):
         super().__init__()
-        self.operation = "z_agg"
+        self.operation = "zscore_agg"
 
 def getAllAggregateOperations():
-    return [MinOperation(), MaxOperation(), MeanOperation(), CountOperation(), StdOperation(), ZAggOperation()]
+    return [MinOperation(), MaxOperation(), MeanOperation(), CountOperation(), StdOperation(), ZScoreOperation()]
