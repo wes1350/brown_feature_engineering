@@ -118,7 +118,7 @@ class TestTransform(unittest.TestCase):
 
     def test_date_split_specific(self):
         op_name = "date_split"
-        hyperparams = {"features": ["{op}_{time}(dates)".format(op=op_name, time=t) for t in ["year, hour, day, microsecond"]]}
+        hyperparams = {"features": ["{op}_{time}(dates)".format(op=op_name, time=t) for t in ["year", "hour", "day", "microsecond"]]}
         result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df_date).value
         for feature in hyperparams["features"]:
             self.assertIn(feature, result.columns)
@@ -128,12 +128,6 @@ class TestTransform(unittest.TestCase):
         ans = [22, 22, 13, 1, 3, 4, 22, 22, 3, 3]
         for i in range(len(ans)):
             self.assertEqual(result_column[i], ans[i])
-
-    def test_date_split_full(self):
-        op_name = "date_split"
-        hyperparams = {"features": ["{op}(dates)".format(op=op_name)]}
-        result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df_date).value
-        self.assertEqual(len(result.columns), df_date.shape[1] + 9)
 
     def test_one_term_frequency(self):
         op_name = "one_term_frequency"
