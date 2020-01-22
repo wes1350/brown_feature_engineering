@@ -23,7 +23,7 @@ class TwoArgOperation(Operation):
         numeric_col_names_set = set(numeric_col_names)
         unique_name_pairs = []
 
-        if self.isSymmetric():
+        if False:
             for i in range(len(numeric_col_names)):
                 for j in range(i + 1, len(numeric_col_names)):
                     old_name_1 = numeric_col_names[i]
@@ -33,7 +33,7 @@ class TwoArgOperation(Operation):
                         unique_name_pairs.append((old_name_1, old_name_2))
         else:
             for i in range(len(numeric_col_names)):
-                for j in list(range(i)) + list(range(i + 1, len(numeric_col_names))):
+                for j in list(range(len(numeric_col_names))):
                     old_name_1 = numeric_col_names[i]
                     old_name_2 = numeric_col_names[j]
                     new_name = self.getOperation() + "(" + old_name_1 + ", " + old_name_2 + ")"

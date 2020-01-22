@@ -166,9 +166,6 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                                     # If it takes two arguments, parse them
                                     if takes_two_args(op_name):
                                         arguments = get_two_features_from_str(trimmed_str)
-                                        if arguments[0] == arguments[1]:
-                                            raise ValueError("Cannot duplicate argument for operation taking two arguments:"
-                                                             " {name}".format(name=feature_name))
                                         return {"op_name": op_name, "feature_names": [arguments[0], arguments[1]],
                                                 "additional_info": None}
                                     else:  # If it only takes one argument, the trimmed name will be the feature name
@@ -226,8 +223,9 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 continue
             generated_feature = generate_feature_from_name(name, new_index=df.index)
             if generated_feature is None:
-                pass
-            else:
+                if name not in df.columns:
+                    raise ValueError("{name} references a nonexistent feature!".format(name=name))
+            # else:
                 df_copy[name] = generated_feature[name]
 
         outputs = container.DataFrame(df_copy)

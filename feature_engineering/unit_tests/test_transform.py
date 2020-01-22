@@ -35,9 +35,9 @@ class TestTransform(unittest.TestCase):
             "cos": [0.540, -0.416, -0.989, -0.653, 0.283, 0.960, 0.753, -0.145, -0.911, -0.839],
             "square": [1, 4, 9, 16, 25, 36, 49, 64, 81, 100],
             "sqrt": [1, 1.414, 1.732, 2, 2.236, 2.449, 2.645, 2.828, 3, 3.162],
-            "rc": [0.761, 0.964, 0.995, 0.999, 0.999, 1, 1, 1, 1, 1],
+            "rc": [1, 0.5, 0.333, 0.25, 0.2, 0.166, 0.142, 0.125, 0.111, 0.1],
             "sigmoid": [0.731, 0.880, 0.952, 0.982, 0.993, 0.997, 0.999, 1, 1, 1],
-            "tanh": [1, 0.5, 0.333, 0.25, 0.2, 0.166, 0.142, 0.125, 0.111, 0.1]
+            "tanh": [0.761, 0.964, 0.995, 0.999, 0.999, 1, 1, 1, 1, 1]
         }
         for op_name in answers_by_operation:
             hyperparams = {"features": ["{op}(n{c})".format(op=op_name, c=str(i)) for i in [1, 2, 3]]}
@@ -61,8 +61,7 @@ class TestTransform(unittest.TestCase):
         }
 
         for op_name in answers_by_operation:
-            hyperparams = {"features": ["{op}(n{i}, n{j})".format(op=op_name, i=c%3+1, j=c/3+1) for c in range(3**2) if
-                                        c%3 != c/3]}
+            hyperparams = {"features": ["{op}(n{i}, n{j})".format(op=op_name, i=c%3+1, j=c/3+1) for c in range(3**2)]}
 
             result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
             for feature in hyperparams["features"]:
@@ -87,7 +86,7 @@ class TestTransform(unittest.TestCase):
             for feature in hyperparams["features"]:
                 self.assertIn(feature, result.columns)
             self.assertEqual(len(result.columns), df1.shape[1] + 3)
-            result_column = list(result["{op}(n1)".format(op=op_name)])
+            result_column = list(result["{op}(n{c})".format(op=op_name, c=(str(1) if op_name != "binning_u" else str(3)))])
 
             ans = answers_by_operation[op_name]
             for i in range(len(ans)):
@@ -123,7 +122,7 @@ class TestTransform(unittest.TestCase):
         for feature in hyperparams["features"]:
             self.assertIn(feature, result.columns)
         self.assertEqual(len(result.columns), df_date.shape[1] + 4)
-        result_column = list(result["{op}_day".format(op=op_name)])
+        result_column = list(result["{op}_day(dates)".format(op=op_name)])
 
         ans = [22, 22, 13, 1, 3, 4, 22, 22, 3, 3]
         for i in range(len(ans)):
@@ -208,7 +207,7 @@ class TestTransform(unittest.TestCase):
         for i in range(100):
             df["column_{n}".format(n=i)] = range(i, i+10)
         hyperparams = {"features": ["sum(column_{i}, column_{j})".format(i=str(k/100+1), j=str(k%100+1))
-                                    for k in range(100**2) if k/100 != k%100]}
+                                    for k in range(100**2)]}
 
         result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
         for feature in hyperparams["features"]:
@@ -304,5 +303,5 @@ class TestTransform(unittest.TestCase):
         result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
         self.assertEqual(len(result.columns), df1.shape[1])
 
-if __name__ == '__main__':
-    unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()
