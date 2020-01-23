@@ -45,7 +45,7 @@ class TestTransform(unittest.TestCase):
             result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
             for feature in hyperparams["features"]:
                 self.assertIn(feature, result.columns)
-            self.assertEqual(len(result.columns), df1.shape[1] + 3)
+            self.assertEqual(len(result.columns), df1.shape[1] + len(hyperparams["features"]))
             result_column = list(result["{op}(n1)".format(op=op_name)])
 
             ans = answers_by_operation[op_name]
@@ -61,13 +61,13 @@ class TestTransform(unittest.TestCase):
         }
 
         for op_name in answers_by_operation:
-            hyperparams = {"features": ["{op}(n{i}, n{j})".format(op=op_name, i=c%3+1, j=c/3+1) for c in range(3**2)]}
+            hyperparams = {"features": ["{op}(n{i}, n{j})".format(op=op_name, i=int(c%3)+1, j=int(c/3)+1) for c in range(3**2)]}
 
             result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
             for feature in hyperparams["features"]:
                 self.assertIn(feature, result.columns)
-            self.assertEqual(len(result.columns), df1.shape[1] + 6)
-            result_column = list(result["{op}(n1, n2)".format(op=op_name)])
+            self.assertEqual(len(result.columns), df1.shape[1] + len(hyperparams["features"]))
+            result_column = list(result["{op}(n{i}, n{j})".format(op=op_name, i=(1 if op_name != "divide" else 2), j=(2 if op_name != "divide" else 1))])
 
             ans = answers_by_operation[op_name]
             for i in range(len(ans)):
@@ -103,7 +103,7 @@ class TestTransform(unittest.TestCase):
         }
 
         for op_name in answers_by_operation:
-            hyperparams = {"features": ["{op}(n{n}, c{c})".format(op=op_name, n=i%3+1, c=i/3+1) for i in range(3**2)]}
+            hyperparams = {"features": ["{op}(n{n}, c{c})".format(op=op_name, n=int(i%3)+1, c=int(i/3)+1) for i in range(3**2)]}
 
             result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
             for feature in hyperparams["features"]:
@@ -203,22 +203,22 @@ class TestTransform(unittest.TestCase):
     # Test on large set of features to generate
 
     def test_large_number_of_features(self):
-        df = pd.DataFrame({})
+        df_large = container.DataFrame(pd.DataFrame({}))
         for i in range(100):
-            df["column_{n}".format(n=i)] = range(i, i+10)
-        hyperparams = {"features": ["sum(column_{i}, column_{j})".format(i=str(k/100+1), j=str(k%100+1))
+            df_large["column_{n}".format(n=i+1)] = range(i, i+10)
+        hyperparams = {"features": ["sum(column_{i}, column_{j})".format(i=int(k/100)+1, j=int(k%100)+1)
                                     for k in range(100**2)]}
 
-        result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
+        result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df_large).value
         for feature in hyperparams["features"]:
             self.assertIn(feature, result.columns)
-        self.assertEqual(len(result.columns), df1.shape[1] + len(hyperparams["features"]))
+        self.assertEqual(len(result.columns), df_large.shape[1] + len(hyperparams["features"]))
 
         for i in range(100):
             for j in range(100):
                 for k in range(10):
-                    self.assertEqual(result["sum(column_{i}, column_{j}".format(i=str(i+1), j=str(j+1))],
-                                     df["column_{i}".format(i=str(i+1))]+df["column_{j}".format(j=str(j+1))])
+                    self.assertEqual(result["sum(column_{i}, column_{j})".format(i=str(i+1), j=str(j+1))][k],
+                                     df_large["column_{i}".format(i=str(i+1))][k]+df_large["column_{j}".format(j=str(j+1))][k])
 
     # Test for invalid operations
 
@@ -229,7 +229,7 @@ class TestTransform(unittest.TestCase):
             result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
 
     def test_invalid_operation_mixed_with_valid(self):
-        hyperparams = {"features": ["log(n1), sin(n1), invalid(n1), sum(n1, n2)"]}
+        hyperparams = {"features": ["log(n1)", "sin(n1)", "invalid(n1)", "sum(n1, n2)"]}
 
         with self.assertRaises(Exception):
             result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
@@ -255,7 +255,7 @@ class TestTransform(unittest.TestCase):
             result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
 
     def test_invalid_parentheses_mixed_with_valid(self):
-        hyperparams = {"features": ["log(n1), sin(n1), rc((n1), sum(n1, n2)"]}
+        hyperparams = {"features": ["log(n1)", "sin(n1)", "rc(n1))", "sum(n1, n2)"]}
 
         with self.assertRaises(Exception):
             result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
@@ -271,7 +271,7 @@ class TestTransform(unittest.TestCase):
     # Test for duplicate column
 
     def test_duplicate_column(self):
-        hyperparams = {"features": ["log(n1), rc(n1), log(n1)"]}
+        hyperparams = {"features": ["log(n1)", "rc(n1)", "log(n1)"]}
 
         result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
         for feature in hyperparams["features"]:

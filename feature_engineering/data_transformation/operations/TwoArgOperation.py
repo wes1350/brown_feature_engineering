@@ -17,13 +17,13 @@ class TwoArgOperation(Operation):
         return None
 
     def transform(self, df, new_feature_cache=None, correlation_threshold=0.99, skip_correlation_check=False,
-                  concatenate_originals=True):
+                  concatenate_originals=True, allow_redundancy=False):
         numeric_col_names = df.select_dtypes(include=['number']).columns.tolist()
         numeric_col_names = [name for name in numeric_col_names if "__dummy__" not in name]
         numeric_col_names_set = set(numeric_col_names)
         unique_name_pairs = []
 
-        if False:
+        if self.isSymmetric() and not allow_redundancy:
             for i in range(len(numeric_col_names)):
                 for j in range(i + 1, len(numeric_col_names)):
                     old_name_1 = numeric_col_names[i]
@@ -33,7 +33,8 @@ class TwoArgOperation(Operation):
                         unique_name_pairs.append((old_name_1, old_name_2))
         else:
             for i in range(len(numeric_col_names)):
-                for j in list(range(len(numeric_col_names))):
+                j_list = list(range(len(numeric_col_names))) if allow_redundancy else list(range(i)) + list(range(i + 1, len(numeric_col_names)))
+                for j in j_list:
                     old_name_1 = numeric_col_names[i]
                     old_name_2 = numeric_col_names[j]
                     new_name = self.getOperation() + "(" + old_name_1 + ", " + old_name_2 + ")"

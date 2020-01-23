@@ -203,7 +203,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 return op_mapping[op_name].transform(
                     pd.DataFrame({args[0]: values_0, args[1]: values_1}, index=new_index),
                     correlation_threshold=2,  # threshold must be > 1 to ensure no removal
-                    concatenate_originals=False)
+                    concatenate_originals=False, allow_redundancy=True)
             elif op_mapping[op_name].opType == "date":
                 values = df[args[0]].values if args[0] in df.columns else \
                 generate_feature_from_name(args[0], new_index=new_index)[args[0]]
@@ -218,8 +218,12 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
         if type(names) == "str":
             names = json.loads(names)
 
+        handled_feature_count = 0
         for name in names:
-            if name in df_copy.columns:
+            if handled_feature_count == len(names):
+                break
+            if name in df_copy:
+                handled_feature_count += 1
                 continue
             generated_feature = generate_feature_from_name(name, new_index=df.index)
             if generated_feature is None:
@@ -227,6 +231,10 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                     raise ValueError("{name} references a nonexistent feature!".format(name=name))
             else:
                 df_copy[name] = generated_feature[name]
+                handled_feature_count += 1
+                for f in generated_feature.columns:
+                    if f in names and f not in df_copy:
+                        df_copy[f] = generated_feature[f]
 
         outputs = container.DataFrame(df_copy)
 
