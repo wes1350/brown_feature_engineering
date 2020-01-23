@@ -225,7 +225,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             if generated_feature is None:
                 if name not in df.columns:
                     raise ValueError("{name} references a nonexistent feature!".format(name=name))
-            # else:
+            else:
                 df_copy[name] = generated_feature[name]
 
         outputs = container.DataFrame(df_copy)

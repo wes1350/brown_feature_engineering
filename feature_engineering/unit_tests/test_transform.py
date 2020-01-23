@@ -303,5 +303,5 @@ class TestTransform(unittest.TestCase):
         result = DataframeTransform(hyperparams=hyperparams).produce(inputs=df1).value
         self.assertEqual(len(result.columns), df1.shape[1])
 
-# if __name__ == '__main__':
-#     unittest.main()
+if __name__ == '__main__':
+    unittest.main()
