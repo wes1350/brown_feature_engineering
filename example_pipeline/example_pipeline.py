@@ -2,7 +2,7 @@ from d3m import index
 from d3m.metadata.base import ArgumentType
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 
-# -> dataset_to_dataframe -> column_parser -> extract_columns_by_semantic_types(attributes) -> imputer -> feature_engineering -> random_forest ->
+# -> dataset_to_dataframe -> column_parser -> extract_columns_by_semantic_types(attributes) -> imputer -> feature_engineering -> random_forest -> construct_predictions
 #                                             extract_columns_by_semantic_types(targets)    ->                                   ^
 
 # Creating pipeline
@@ -50,8 +50,7 @@ pipeline_description.add_step(step_4)
 step_5 = PrimitiveStep(primitive=index.get_primitive('d3m.primitives.data_transformation.feature_transform.Brown'))
 step_5.add_argument(name='inputs', argument_type=ArgumentType.CONTAINER, data_reference='steps.4.produce')
 step_5.add_output('produce')
-step_5.add_hyperparameter(name='paths', argument_type=ArgumentType.VALUE, data="[[0, 1]]")
-step_5.add_hyperparameter(name='operations', argument_type=ArgumentType.VALUE, data="{\"1\": \"log\"}")
+step_5.add_hyperparameter(name='features', argument_type=ArgumentType.VALUE, data="[log(Hits), sqrt(Runs)]")
 pipeline_description.add_step(step_5)
 
 # Step 7: random_forest
