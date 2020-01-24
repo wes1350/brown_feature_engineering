@@ -31,8 +31,10 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     dataframe, e.g. log of column values, or sum of two different column values.
 
 
-    features: A list of strings or json array corresponding to columns new columns to generate. Note that all
+    features: A list of strings or json array corresponding to new columns to generate. Note that all
     original columns will be included in the returned dataframe, even if they are not included here.
+
+    Valid features to generate are of the form: [operation name]([args]). Here, args may consist of one or two features, either present in the original dataframe or themselves generated features. Examples of valid features to generate include: "log(temp)", "sum(log(temp), sqrt(temp))", "max_agg(temp, city)", "date_split_month(date)".
 
     Returns a dataframe containing the columns in the original dataframe, plus new columns for each feature name given.
     """
@@ -111,6 +113,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
             """Given a name to engineer, return a new feature corresponding to that name."""
 
             def parse_feature_name(feature_name):
+                "Given a feature name, return an object containing information about the feature it represents."
 
                 def takes_two_args(op_str):
                     """Return True if the operation corresponding to the input takes two arguments."""
