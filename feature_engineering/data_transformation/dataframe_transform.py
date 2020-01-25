@@ -39,12 +39,12 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
     Returns a dataframe containing the columns in the original dataframe, plus new columns for each feature name given.
     """
 
-    #_TAG_NAME = "{git_commit}".format(git_commit=utils.current_git_commit(os.path.dirname(__file__)), )
+    _TAG_NAME = "{git_commit}".format(git_commit=utils.current_git_commit(os.path.dirname(__file__)), )
     _REPOSITORY = 'https://github.com/wes1350/brown_feature_engineering'
-    #if _TAG_NAME:
-    #    _PACKAGE_URI = "git+" + _REPOSITORY + "@" + _TAG_NAME
-    #else:
-    _PACKAGE_URI = "git+" + _REPOSITORY
+    if _TAG_NAME:
+        _PACKAGE_URI = "git+" + _REPOSITORY + "@" + _TAG_NAME
+    else:
+        _PACKAGE_URI = "git+" + _REPOSITORY
     _PACKAGE_NAME = 'brown_feature_engineering'
     _PACKAGE_URI = _PACKAGE_URI + "#egg=" + _PACKAGE_NAME
 
