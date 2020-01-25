@@ -217,9 +217,7 @@ class DataframeTransform(featurization.TransformerPrimitiveBase[Inputs, Outputs,
                 raise Exception("Invalid operation: " + op_name)
 
         df_copy = df.copy()
-        names = self.hyperparams["features"]
-        if type(names) == "str":
-            names = json.loads(names)
+        names = self.hyperparams["features"] if type(self.hyperparams["features"]) != "str" else json.loads(self.hyperparams["features"])
 
         handled_feature_count = 0
         for name in names:

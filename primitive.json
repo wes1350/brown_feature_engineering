@@ -1,6 +1,6 @@
 {
     "id": "99951ce7-193a-408d-96f0-87164b9a2b26",
-    "version": "0.1.1",
+    "version": "0.2.1",
     "name": "Feature Engineering Dataframe Transformer",
     "keywords": [
         "feature engineering",
@@ -17,7 +17,7 @@
     "installation": [
         {
             "type": "PIP",
-            "package_uri": "git+https://github.com/wes1350/brown_feature_engineering@682b2872ce09d9a6325f8cbb2fc4c8951aa25e25#egg=brown_feature_engineering"
+            "package_uri": "git+https://github.com/wes1350/brown_feature_engineering@6e7a2beb16521bcbe81249e3d741c1581dba6049#egg=brown_feature_engineering"
         }
     ],
     "algorithm_types": [
@@ -25,10 +25,7 @@
     ],
     "primitive_family": "FEATURE_EXTRACTION",
     "hyperparams_to_tune": [
-        "paths",
-        "operations",
-        "names_to_keep",
-        "opt_outs"
+        "features"
     ],
     "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/primitive.json",
     "original_python_path": "feature_engineering.data_transformation.dataframe_transform.DataframeTransform",
@@ -45,41 +42,14 @@
             "base.PrimitiveBase"
         ],
         "hyperparams": {
-            "paths": {
+            "features": {
                 "type": "d3m.metadata.hyperparams.Hyperparameter",
                 "default": null,
                 "structural_type": "typing.Union[NoneType, str]",
                 "semantic_types": [
                     "https://metadata.datadrivendiscovery.org/types/ControlParameter"
                 ],
-                "description": "List of lists describing the tree structure leading to the desired result in json format."
-            },
-            "operations": {
-                "type": "d3m.metadata.hyperparams.Hyperparameter",
-                "default": null,
-                "structural_type": "typing.Union[NoneType, str]",
-                "semantic_types": [
-                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
-                ],
-                "description": "Dict of operation types corresponding to each of the labels given in paths in json format."
-            },
-            "names_to_keep": {
-                "type": "d3m.metadata.hyperparams.Hyperparameter",
-                "default": null,
-                "structural_type": "typing.Union[NoneType, str]",
-                "semantic_types": [
-                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
-                ],
-                "description": "Feature names to keep. None signifies keep all."
-            },
-            "opt_outs": {
-                "type": "d3m.metadata.hyperparams.Hyperparameter",
-                "default": null,
-                "structural_type": "typing.Union[NoneType, str]",
-                "semantic_types": [
-                    "https://metadata.datadrivendiscovery.org/types/ControlParameter"
-                ],
-                "description": "Dict of pre-processing steps to skip in json format."
+                "description": "Feature names to generate."
             }
         },
         "arguments": {
@@ -221,6 +191,6 @@
         }
     },
     "structural_type": "feature_engineering.data_transformation.dataframe_transform.DataframeTransform",
-    "description": "A primitive which transforms a dataframe by adding or removing columns based on the operations specified. Additional\ncolumns take values based on previous columns, e.g. log of column values, or sum of two different column values.\nColumns can also be removed with certain operations. Preprocessing steps are also included, but can be opted out of.\nThe original data of the input will be re-added in its original form if removed or edited during the operation of\nthe primitive. There is no guarantee on the order of the columns in the returned dataframe.\n\nThe primitive inputs represent a DAG originating from one node and leading to another. The DAG may \"expand\" into\nmultiple paths by using several operations (described below) at non-terminal nodes, but ultimately must converge\nback into a single node. Each node must have an associated operation, which corresponds to some transformation\nfunction.\n\nThe DAG structure is given by the paths variable below, while the operations which correspond to each node are\nspecified in the operations hyperparameter.\n\nExample 1:\n\nWe want to add to our dataframe the columns corresponding to the log of each numerical column.\n\nThe DAG looks like this: 0 (base) -> 1 (log)\n\nExample 2:\n\nWe want to add columns corresponding to log, and also columns corresponding to date splitting\n\n                                                                           -> 1 (log)\nThe DAG could look like this (nodes 1 and 2 are interchangeable): 0 (base)                   -> 3 (union)\n                                                                           -> 2 (date_split)\ni.e., paths to the terminal node (3) include 0 -> 1 -> 3 and 0 -> 2 -> 3.\nHere, union just performs the union of the two dataframes generated (log result, and date_split result)\n\nNote that the following would produce the same result:\n\n0 (base) -> 1 (log) -> 2 (date_split)\n\nAs log only acts on numeric columns and date_split only on datetime columns, the result of the log call is not\ninfluenced by the date_split operation. Hence union is actually unnecessary here.\n\nExample 3:\n\nWe want to add columns corresponding to log of each numeric column, sqrt of each numeric column, and the sqrt of the\nlog of each numeric column. Then, we only want to keep a specific subset of the generated columns.\n\nIn this case, the DAG would look like this: 0 (base) -> 1 (sqrt) -> 2 (log)\n\nLet the set of original numeric columns be C. Then at node 1, we will have generated a dataframe with columns C and\nsqrt(C), where sqrt C is a set of columns containing exactly all columns of C after a sqrt operation. In other words,\nthe size of the numeric portion of the base dataframe has doubled in column dimension.\n\nAfter step 2, we will have generated the sqrt of each column in Union(C, sqrt C), as in step 1 we just added sqrt C\nto the original C dataframe. So, the dataframe will now be Union(C, sqrt C, log C, log sqrt C), and the dataframe\nwill have quadrupled in size in column space.\n\n\n\nAll hyperparameters described below are to be given in json format.\n\n\npaths: A list of lists describing paths from the base dataframe to the final result. All paths must start with the\nfirst node (0) and end with the final node, whatever it may be. All nodes specified in each path must have\ncorresponding operations specified in the operations argument.\n-- Example: [[0, 1, 2, 5, 6], [0, 1, 3, 5, 6], [0, 4, 6]]\n-- Example: [[0, 1]] (simplest, will just do one transformation step)\n\noperations: A dict mapping nodes of the DAG to operation codes. The initial node operation is not specified (or can\n            be specified with the dummy operation \"INIT\")\n-- Example: {1: \"log\", 2: \"sum\"} or {0: \"INIT\", 1: \"log\", 2: \"sum\"}\n\nnames_to_keep: A list of strings corresponding to columns to retain after creation. Useful if we don't want to\nkeep all generated columns. The default value of None retains all generated columns.\n\nopt_outs: A list of preprocessing steps to opt out of. Default is to opt out of none.\n\n-- Options: \"skip_all\": skip all preprocessing steps\n            \"skip_drop_index\": drop the column \"d3mIndex\" if it exists\n            \"skip_infer_dates\": don't try to produce datetime columns from names containing \"date\" or \"Date\"\n            \"skip_remove_full_NA_columns\": don't remove columns whose values are all NA\n            \"skip_fill_in_categorical_NAs\": don't replace NA values with the value \"__missing__\" in categorical cols\n            \"skip_impute_with_median\": don't impute NA values with the median in numeric columns\n            \"skip_one_hot_encode\": don't one hot encode categorical columns\n            \"skip_remove_high_cardinality_cat_vars\": don't remove categorical columns with mostly unique values\n            \"skip_rename_for_xgb\": don't rename columns to comply with XGBoost requirements\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
-    "digest": "e724d1aee0a330bda616206fa86911f702315b0fa216236abf4c222f6f7be8d3"
+    "description": "A primitive which transforms a dataframe by adding or removing columns based on the columns initally present in the\ndataframe, e.g. log of column values, or sum of two different column values.\n\n\nfeatures: A list of strings or json array corresponding to new columns to generate. Note that all\noriginal columns will be included in the returned dataframe, even if they are not included here.\n\nValid features to generate are of the form: [operation name]([args]). Here, args may consist of one or two features, either present in the original dataframe or themselves generated features. Examples of valid features to generate include: \"log(temp)\", \"sum(log(temp), sqrt(temp))\", \"max_agg(temp, city)\", \"date_split_month(date)\".\n\nReturns a dataframe containing the columns in the original dataframe, plus new columns for each feature name given.\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
+    "digest": "40fe4b5fa5f6475b873c3365328c17b45d0dab9e87ba77a2bf98616b0711a3aa"
 }
