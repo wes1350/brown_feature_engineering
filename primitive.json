@@ -17,7 +17,7 @@
     "installation": [
         {
             "type": "PIP",
-            "package_uri": "git+https://github.com/wes1350/brown_feature_engineering@6e7a2beb16521bcbe81249e3d741c1581dba6049#egg=brown_feature_engineering"
+            "package_uri": "git+https://github.com/wes1350/brown_feature_engineering@ea79878019b3325e5e0b4d41116266cb3bebda89#egg=brown_feature_engineering"
         }
     ],
     "algorithm_types": [
@@ -36,7 +36,7 @@
             "Hyperparams": "feature_engineering.data_transformation.dataframe_transform.Hyperparams",
             "Params": "NoneType"
         },
-        "interfaces_version": "2019.11.10",
+        "interfaces_version": "2020.1.9",
         "interfaces": [
             "transformer.TransformerPrimitiveBase",
             "base.PrimitiveBase"
@@ -192,5 +192,5 @@
     },
     "structural_type": "feature_engineering.data_transformation.dataframe_transform.DataframeTransform",
     "description": "A primitive which transforms a dataframe by adding or removing columns based on the columns initally present in the\ndataframe, e.g. log of column values, or sum of two different column values.\n\n\nfeatures: A list of strings or json array corresponding to new columns to generate. Note that all\noriginal columns will be included in the returned dataframe, even if they are not included here.\n\nValid features to generate are of the form: [operation name]([args]). Here, args may consist of one or two features, either present in the original dataframe or themselves generated features. Examples of valid features to generate include: \"log(temp)\", \"sum(log(temp), sqrt(temp))\", \"max_agg(temp, city)\", \"date_split_month(date)\".\n\nReturns a dataframe containing the columns in the original dataframe, plus new columns for each feature name given.\n\nAttributes\n----------\nmetadata : PrimitiveMetadata\n    Primitive's metadata. Available as a class attribute.\nlogger : Logger\n    Primitive's logger. Available as a class attribute.\nhyperparams : Hyperparams\n    Hyperparams passed to the constructor.\nrandom_seed : int\n    Random seed passed to the constructor.\ndocker_containers : Dict[str, DockerContainer]\n    A dict mapping Docker image keys from primitive's metadata to (named) tuples containing\n    container's address under which the container is accessible by the primitive, and a\n    dict mapping exposed ports to ports on that address.\nvolumes : Dict[str, str]\n    A dict mapping volume keys from primitive's metadata to file and directory paths\n    where downloaded and extracted files are available to the primitive.\ntemporary_directory : str\n    An absolute path to a temporary directory a primitive can use to store any files\n    for the duration of the current pipeline run phase. Directory is automatically\n    cleaned up after the current pipeline run phase finishes.",
-    "digest": "40fe4b5fa5f6475b873c3365328c17b45d0dab9e87ba77a2bf98616b0711a3aa"
+    "digest": "5ef8e46c7c1dee5ab4dc2b9fe51cbc2785dc588d6d417ff6ee9ec56f62141361"
 }
